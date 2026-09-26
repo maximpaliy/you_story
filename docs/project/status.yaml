@@ -1,0 +1,10 @@
+project: music-practice-tracker
+stage: project-definition
+status: awaiting-foundation-work
+human_approval:
+  architecture: pending
+  security: pending
+  test_strategy: pending
+notes:
+  - Initial project bootstrap.
+  - No production implementation is authorized by the foundation workflow.
