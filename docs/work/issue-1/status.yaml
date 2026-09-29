@@ -1,0 +1,13 @@
+issue: 1
+status: ready_for_first_increment_test_design
+phase: test_design
+requirements_source: https://github.com/maximpaliy/you_story/issues/1
+requirements_review: approved_with_owner_clarifications
+architecture: first_increment_approved
+architecture_review: passed
+security_review: conditional_pass_with_open_findings
+test_design_review: not_started
+implementation: not_started
+code_review: pending
+verification: documentation_checks_passed
+blocker: null

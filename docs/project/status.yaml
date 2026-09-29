@@ -1,10 +1,20 @@
 project: music-practice-tracker
-stage: project-definition
-status: awaiting-foundation-work
+stage: test-design
+status: ready-for-first-increment-test-design
 human_approval:
-  architecture: pending
+  architecture: partial
+  first_increment_architecture: approved
   security: pending
   test_strategy: pending
 notes:
   - Initial project bootstrap.
+  - "Issue #1 requirements and owner clarifications are synchronized to the product definition."
+  - Proposed architecture passed independent architecture review; security review is conditional with open findings.
+  - Modular-monolith architecture and the independently reviewed ADR-005 module/data boundaries are approved; the boundary condition is complete.
+  - ADR-002 extensible catalog/history and ADR-003 tenancy/future-sharing and authorization/RLS decisions are approved.
+  - ADR-004 managed GCP foundation and private-media boundary are approved, with production and media-policy gates retained.
+  - ADR-006 is approved; media, account deletion and offline capabilities are excluded from the first increment, and ordinary later additive migrations are allowed.
+  - ADR-007 Google OIDC and server-side web-session architecture is approved; email is not collected in the first increment.
+  - First-increment architecture is approved; privacy, media and production decisions remain later feature/deployment gates.
+  - No security risk or production cost has been accepted.
   - No production implementation is authorized by the foundation workflow.
