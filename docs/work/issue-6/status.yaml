@@ -1,0 +1,16 @@
+issue: 6
+backlog_id: MVP-03
+status: security_design
+phase: security_prerequisite_design
+requirements_source: https://github.com/maximpaliy/you_story/issues/6
+requirements_review: cookie_defaults_approved_2026_10_03
+architecture: adr_007_cookie_details_approved_remaining_details_pending
+architecture_review: pending
+security_review: pending
+test_design: pending
+test_design_review: pending
+human_approval: cookie_defaults_approved_2026_10_03
+implementation: not_started
+code_review: not_applicable
+verification: documentation_checks_passed
+blocker: remaining_sec_05_design_and_reviews

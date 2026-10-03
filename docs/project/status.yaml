@@ -1,6 +1,6 @@
 project: music-practice-tracker
 stage: security-prerequisite-design
-status: ready-for-remaining-security-prerequisite-design
+status: issue-6-auth-session-security-design
 human_approval:
   architecture: partial
   first_increment_architecture: approved
@@ -23,3 +23,4 @@ notes:
   - On 2026-10-03 the owner required explicit actor-derived tenant predicates in normal repository queries in addition to FORCE RLS; architecture, security and test-design re-reviews passed after the traceability and mutation design was expanded.
   - Post-bootstrap catalog provisioning was clarified on 2026-10-03: it runs only from first or pending-account login callbacks, never every HTTP request; atomicity, state-transition and concurrency reviews passed.
   - The human owner approved ADR-008 on 2026-10-03, completing Issue #5 and the SEC-01 design gate; implementation evidence and security re-review remain assigned to Issue #9.
+  - Issue #6 started on 2026-10-03; the owner approved `__Host-you_story_session`, `Path=/`, no `Domain`, and persistent `Max-Age=2592000`, while the remaining SEC-05 design and reviews remain pending.
