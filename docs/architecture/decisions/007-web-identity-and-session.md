@@ -30,11 +30,13 @@ linking flow and a separately reviewed decision.
 
 The web client receives only an opaque, cryptographically random
 `__Host-you_story_session` cookie with `HttpOnly`, `Secure`, `SameSite=Lax`, path
-`/`, no `Domain`, and a maximum age no greater than the 30-day absolute session
-lifetime. Store only a one-way digest of its bearer token in PostgreSQL under the
-identity module; the raw token exists only in the cookie and comparisons avoid
-secret-dependent timing. Request no refresh token, and discard the authorization
-code and Google ID/access tokens after the callback establishes identity.
+`/`, no `Domain`, and `Max-Age=2592000` (30 days). The persistent browser cookie
+may survive a browser restart, but never extends the authoritative server-side
+absolute or idle deadline. Store only a one-way digest of its bearer token in
+PostgreSQL under the identity module; the raw token exists only in the cookie and
+comparisons avoid secret-dependent timing. Request no refresh token, and discard
+the authorization code and Google ID/access tokens after the callback establishes
+identity.
 Sessions rotate after login and future privilege changes, expire after 7 idle
 days or 30 absolute days, and are revoked immediately on logout. Multiple
 independently revocable browser/device sessions are allowed. State-changing
@@ -85,3 +87,6 @@ context and application authorization.
 ## Human approval
 
 Approved by the human owner on 2026-09-29.
+
+The human owner approved the Issue #6 cookie name, path, host-only scope and
+30-day persistence clarification on 2026-10-03.
