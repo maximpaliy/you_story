@@ -1,11 +1,11 @@
 project: music-practice-tracker
-stage: test-design
-status: ready-for-first-increment-test-design
+stage: security-prerequisite-design
+status: ready-for-remaining-security-prerequisite-design
 human_approval:
   architecture: partial
   first_increment_architecture: approved
   security: pending
-  test_strategy: pending
+  test_strategy: approved
 notes:
   - Initial project bootstrap.
   - "Issue #1 requirements and owner clarifications are synchronized to the product definition."
@@ -18,3 +18,8 @@ notes:
   - First-increment architecture is approved; privacy, media and production decisions remain later feature/deployment gates.
   - No security risk or production cost has been accepted.
   - No production implementation is authorized by the foundation workflow.
+  - The first-increment test strategy passed independent review and was approved by the human owner on 2026-09-30 in Issue #4.
+  - Issue #5 proposed ADR-008 for fail-closed PostgreSQL tenant isolation; the human owner directed the simpler two-identity model (`app_runtime` plus controlled `app_owner`) on 2026-10-02, and independent architecture/security/test-design re-reviews passed.
+  - On 2026-10-03 the owner required explicit actor-derived tenant predicates in normal repository queries in addition to FORCE RLS; architecture, security and test-design re-reviews passed after the traceability and mutation design was expanded.
+  - Post-bootstrap catalog provisioning was clarified on 2026-10-03: it runs only from first or pending-account login callbacks, never every HTTP request; atomicity, state-transition and concurrency reviews passed.
+  - The human owner approved ADR-008 on 2026-10-03, completing Issue #5 and the SEC-01 design gate; implementation evidence and security re-review remain assigned to Issue #9.

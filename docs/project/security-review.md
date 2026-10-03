@@ -91,7 +91,7 @@ and stable subject; server-derived tenant context; service authorization plus
 non-bypassable RLS; personal-only catalog policy with dormant grants; immutable
 history snapshots; private object storage and authorized media intents;
 server-side sessions and CSRF protection; PKCE for public mobile clients;
-separate runtime, migration, and administrative roles; Workload Identity
+separate constrained runtime and privileged deployment-owner identities; Workload Identity
 Federation; environment separation; and explicit security and adversarial test
 handoffs. ADRs 001–004 accurately identify their principal security trade-offs.
 
@@ -108,7 +108,7 @@ data.
 
 | ID | Severity | Finding / risk | Required action and acceptance evidence | Owner / due gate | Status |
 |---|---|---|---|---|---|
-| SEC-01 | **High** | Tenant isolation depends on transaction-local RLS context, but the exact fail-closed mechanism for pooled connections, background jobs, migrations, and privileged roles is unspecified. Stale or absent context could expose every tenant. | Define the database roles and grants, `FORCE ROW LEVEL SECURITY`/owner behavior, transaction-scoped context setup and reset, fail-closed policy for missing context, worker convention, and migration exception path. Provide migrations plus integration tests for read/write/join/child/guessed-ID access, reused pooled connections, missing context, jobs, and runtime-role bypass attempts. | Identity/data owner; **before implementing tenant-backed repositories** | Open — implementation blocker |
+| SEC-01 | **High** | Tenant isolation relies on explicit repository scoping plus transaction-local RLS context. ADR-008 now defines the fail-closed design, but an implementation defect in predicates, pooled context, roles, policies, bootstrap functions or migrations could still expose every tenant. | Implement accepted ADR-008 in Issue #9. Provide real PostgreSQL migrations and evidence for explicit actor-derived repository predicates, `FORCE ROW LEVEL SECURITY`, owner/runtime grants, missing/mismatched context, read/write/join/child/search/count/cursor/guessed-ID access, reused pooled connections, bootstrap/control-plane access, worker absence, migration guardrails and runtime bypass attempts. Reconcile every private table/action/query site and pass independent security re-review. | Identity/data owner; **before merging tenant-backed repositories** | Design resolved by ADR-008; open — implementation evidence blocker |
 | SEC-02 | **High** | The provisional account-deletion approach retains snapshots under an “anonymized principal,” but fields allowed in snapshots, free text, indirect identifiers, linkage, backups, exports, legal basis, retention, and re-identification risk are unresolved. Merely replacing an owner ID is pseudonymization, not necessarily anonymization. | The human owner must approve a data inventory and final delete/export/retention policy. Define direct and indirect identifier removal, free-text handling, unlinkability criteria, catalog/customization/history behavior, identity revocation, backup expiry, audit records, user-visible semantics, and a verification procedure. Call retained data “de-identified” or “pseudonymized” unless an evidence-based anonymization standard is met. | Product/privacy owner; **before account-deletion implementation and before production** | Open — human privacy decision required |
 | SEC-03 | **High** | Media is inherently untrusted and the format, size/duration, validation/scanning, serving, retention, region, and deletion policies are undecided. A signed upload URL alone may not reliably enforce all claimed constraints. | Approve allowlists and limits; document what the selected GCS signing mechanism can enforce; use generated non-overwritable keys, quarantine, server-side metadata and streamed-content validation, checksum/finalize idempotency, malware handling, safe response headers, download authorization, rate/quota limits, cleanup, region, and deletion behavior. Add abuse tests, including spoofed MIME/size, overwrite, incomplete finalize, cross-tenant attach/read, replay, and post-delete access. | Media/security owner; **before media implementation** | Open — implementation and deployment blocker |
 | SEC-04 | **High** | Telegram linking and webhook authentication are future-facing but not sufficiently specified to prevent account takeover or forged/replayed updates. “Signature/secret path” is not an approved protocol. | Before adding Telegram, define the verified webhook mechanism, secret rotation, canonical request validation where applicable, update deduplication/replay window, one-use linking-code entropy/TTL/attempt limits/atomic consumption, confirmation in the authenticated web session, unlink/revoke flow, and rate limits. Threat-model confused-deputy and user-ID reassignment scenarios and test them. | Telegram integration owner; **before Telegram implementation** | Open — future-client blocker; does not block MVP without Telegram |
@@ -279,3 +279,46 @@ and verify exact cookie/session persistence, OAuth error and redirect behavior,
 CSRF binding, fixation/replay resistance, browser security headers, XSS controls,
 tenant context and deny-by-default authorization. No security risk is accepted,
 and production implementation remains gated.
+
+## 12. Addendum — SEC-01 fail-closed tenant isolation (2026-10-03)
+
+Independent architecture, security and test-design reviews assessed ADR-008 and
+its Issue #5 evidence. The human owner approved ADR-008 on 2026-10-03. The
+following SEC-01 design decisions are therefore complete:
+
+1. `app_runtime` is the only running-application database identity and cannot
+   own objects, bypass RLS, assume `app_owner`, alter policies or invoke generic
+   privileged functions. `app_owner` is available only to the controlled
+   migration/deployment process; deployed IAM separation remains Issue #16
+   evidence.
+2. Every normal private repository statement is visibly scoped from immutable
+   `ActorContext`, and every private table occurrence is anchored to that actor.
+   FORCE RLS independently enforces transaction-local tenant context. Use-case
+   ownership/grant/action authorization remains a separate SEC-07 control.
+3. Unit-of-work setup, readback, reset/retirement, nesting and cancellation rules
+   define fail-closed behavior for pooled connections and absent, invalid, stale
+   or mismatched context.
+4. The five-table pre-authentication control plane is a reviewed no-RLS exception
+   reachable by runtime only through fixed, least-result security-definer
+   functions. Personal catalog provisioning is atomic and login-triggered, not a
+   per-request side effect.
+5. The first increment has no background/domain worker. The production
+   composition manifest must prove no hidden worker, CLI, scheduler, callback or
+   consumer exists.
+6. MVP migrations are controlled `app_owner` schema/security migrations plus
+   narrowly defined non-tenant setup. Privileged traversal or mutation of
+   existing tenant data is deliberately undesigned and requires a new reviewed
+   decision if a concrete need arises.
+7. The accepted test design requires semantic pre-driver query/bind inspection,
+   real PostgreSQL role/RLS tests, catalog and query-site reconciliation, and
+   independent mutations of repository predicates and RLS so neither layer can
+   mask absence of the other.
+
+No additional human product or architecture decision remains inside SEC-01 for
+the current MVP design. SEC-01 nevertheless remains **open**: Issue #9 must
+implement the accepted mechanism, preserve evidence for every then-present
+private resource, and pass independent security and code review. Issue #16 must
+later prove deployed owner/runtime credential separation. A material change to
+tenancy, RLS, role boundaries, bootstrap access, query scoping, workers,
+privileged data migration or catalog sharing reopens the relevant design review.
+Approval accepts no risk and does not close SEC-05, SEC-06 or SEC-07.
