@@ -251,6 +251,15 @@ identity; webhook signatures/secret path, replay resistance and rate limits are
 required. Offline writes and conflict synchronization are deliberately deferred;
 Android can add a read cache without changing the API.
 
+ADR-009 defines the browser boundary: cookie-authenticated unsafe requests use a
+session-bound synchronizer token, exact same-origin provenance and route-specific
+media types. User-authored values are plain text with contextual escaping. HTML
+uses a nonce-capable restrictive CSP plus explicit security, caching and
+transport headers. The web client exposes no credentialed cross-origin API,
+rich-text rendering, third-party scripts, framing or upload form in the first
+increment. Android bearer tokens and Telegram webhooks retain separate
+provenance controls rather than inheriting browser CSRF mechanics.
+
 ## 5. Authentication, authorization, and privacy
 
 Google OpenID Connect uses Authorization Code flow with PKCE,
