@@ -276,3 +276,18 @@ No blocking or material architecture finding remains. ADR-007 completes the
 human architecture decisions needed for first-increment test design. It does not
 approve Android or Telegram identity, production implementation, or any deferred
 feature/deployment decision.
+
+## 11. Addendum — browser security controls (2026-10-06)
+
+Independent architecture review assessed ADR-009 after the human owner approved
+choices `1A`, `2A`, `3A` and `4A`. The initial review required precise contracts
+for canonical external origin and proxy trust, media-type/body parsing, complete
+CSP and Permissions Policy values, response-class header ownership, and CSRF
+format/delivery. ADR-009 resolved all five findings and the focused re-review
+passed without accepting risk.
+
+The design is consistent with ADR-007 and the shared REST boundary. Browser
+controls are selected from validated cookie-session authentication rather than
+path or arbitrary credential presence; future Android bearer-token and Telegram
+webhook provenance remain separate reviewed gates. Implementation must conform
+to the exact ADR-009 contract and its approved Issue #7 tests.
