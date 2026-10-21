@@ -1,6 +1,6 @@
 # ADR-010: MVP authorization contracts and historical statistic eligibility
 
-- Status: Proposed — owner review required
+- Status: Proposed — independently reviewed; final consolidated acceptance pending
 - Date: 2026-10-21
 - Related issue: #8 / MVP-05
 
@@ -47,8 +47,10 @@ record is unnecessary if immutable published membership is retained.
 Explicit contracts and bounded query collections improve reviewability and test
 oracles. Aggregate versions can cause safe optimistic conflicts on concurrent
 edits. Actual lock ordering, global-table manifests and database enforcement need
-implementation evidence. Initial Yousician metadata schema, including level type
-and bounds, remains missing; entry create/update are blocked until reviewed.
+implementation evidence. The reviewed
+[initial Yousician schema](../../work/issue-8/yousician-content-schema.md) now
+supplies metadata type/bound/default rules; the previous source-schema design
+block is resolved.
 This ADR does not enable deferred features or close SEC-07.
 
 ## Reviews and human approval
@@ -56,6 +58,8 @@ This ADR does not enable deferred features or close SEC-07.
 See the independent [architecture](../../work/issue-8/architecture-review.md),
 [security](../../work/issue-8/security-review.md) and
 [test-design](../../work/issue-8/test-design-review.md) reports. Framework policy
-and specified test oracles passed focused re-review after remediation; the source
-schema block remains. Owner acceptance of these material clarifications and
-proposed defaults is pending. No production implementation is authorized here.
+and source-specific test oracles passed focused re-review after remediation.
+The owner approved the discussed design direction. New engineering defaults
+(including version/fragment practiceability) remain explicitly distinguishable
+from prior product instructions; final consolidated acceptance remains pending.
+No production implementation or SEC-07 closure is claimed here.

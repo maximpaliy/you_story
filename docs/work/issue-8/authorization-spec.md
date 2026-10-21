@@ -105,10 +105,10 @@ version. Create/move validate all affected edges against that version, not the
 current default. Moves across differing source-definition versions are rejected
 in MVP, including an affected subtree containing mixed versions. Existing entry
 edits validate metadata against the stored version, never silently upgrade it.
-The initial Yousician metadata schema (including exact level type/bounds) is not
-presently defined in approved documents. C03/C04 remain blocked until a reviewed
-initial source-definition contract names all required fields, types and bounds.
-Do not guess a Yousician level scale merely to fill this gap.
+The [initial Yousician source contract](yousician-content-schema.md) supplies
+per-node fields/defaults/bounds and hierarchy. C03/C04 must use that exact
+contract; the earlier missing-schema block is subject to focused re-review.
+No level scale or extra source field may be inferred beyond this contract.
 
 ## C. Definition classification and historical eligibility
 

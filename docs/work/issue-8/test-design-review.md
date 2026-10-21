@@ -3,9 +3,9 @@
 - Review date: 2026-10-21
 - Reviewer: independent test-design review agent
 - Material: authorization-spec.md, test-design.md, owner decisions in README.md,
-  AGENTS.md and approved docs/testing/strategy.md
-- Verdict: pass after focused remediation for the specified authorization
-  contract; initial source-specific schema expansion remains blocked
+  yousician-content-schema.md, AGENTS.md and approved docs/testing/strategy.md
+- Verdict: pass after focused remediation, including the initial Yousician
+  source-schema test expansion
 
 This is approval of the reviewed test-design structure and oracles, not a claim
 that application tests have executed. No implementation, security closure or
@@ -28,13 +28,28 @@ HTTP and real-runtime-role PostgreSQL; ADR-008 SQL/RLS mutations and inventories
 are referenced without replacing them. Non-enumeration, dormant surfaces,
 historical statistic eligibility and captured-zone behavior have named evidence.
 
-The exact initial source metadata contract, particularly Yousician level type
-and boundaries, is not defined. B explicitly blocks C03/C04, and BINDING-01
-requires source-schema expansion before tests for those inputs can be regarded
-as complete. This report does not waive that blocker or make the whole MVP-05
-specification implementation-ready. When the source contract is supplied, its
-schema-specific cases must be independently reviewed rather than inferred from
-this generic pass.
+## Focused source-schema re-review
+
+The prior missing-source-schema test-design blocker is resolved. The concrete
+Yousician contract now supplies song author, version level 0–15, optional measured
+fragment length, nonnegative note count with creation default zero, exact
+replacement keys, hierarchy and published practiceability. Its note count is
+explicitly numeric, not free-text notes; fragment length is independent of
+practice-record duration. Unknown metadata keys remain denied.
+
+YS-01–YS-06 provide U/H/D positive and invalid-input oracles for numeric endpoints,
+null/omission/default distinctions, bool/fraction/overflow rejection, source/node
+scope and hierarchy, replacement preservation, immutable historical data and
+practiceability. Shared SCHEMA-01/02 supply NFC/code-point and unknown-key cases;
+BINDING-01 supplies immutable source-version behavior. Existing authorization,
+state/version, foreign/wrong-parent, atomic-denial and race suites apply to C03/
+C04 and C18 rather than being waived by the new fields. No contradictory
+accept/reject oracle was found in this focused re-review.
+
+The proposed version/fragment practiceability and engineering bounds remain
+explicitly distinguished from owner requirements. They require the separate
+architecture/security and owner dispositions appropriate to the contract;
+this test-design pass does not approve product choices on their behalf.
 
 Owner review and architecture/security re-review of proposed defaults remain
 separate gates. Evidence for production implementation must identify current

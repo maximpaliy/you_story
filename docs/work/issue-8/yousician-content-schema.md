@@ -1,6 +1,7 @@
 # Minimal Yousician content schema — owner direction
 
-Status: owner-supplied shape; validation details and independent re-review pending.
+Status: focused architecture, security and test-design reviews passed;
+new engineering defaults remain separately identified for final acceptance.
 This supplements authorization-spec.md, not a bulk-create endpoint contract.
 
 ## Owner approval — fragment availability rules
@@ -14,9 +15,10 @@ The owner explicitly approved the following fragment rules in this conversation:
 - These are catalog metadata fields, separate from practice duration and
   recorded statistics, and can be filled in later through authorized updates.
 
-This approval is specific to these rules. It does not close Issue #8, supply
-unsettled integer upper bounds/author requiredness, or replace independent
-re-review of the completed source contract.
+The owner subsequently approved the discussed design direction and requested
+independent review. The small validation defaults below are editorial/engineering
+defaults, not additional claims of explicit product approval. Review must verify
+that they preserve the discussed behavior before recommending issue closure.
 
 The owner specified Song -> Version -> Fragment, with author stored on Song for
 now. Author is not yet a separate parent/entity. Future type (chords/melody/
@@ -32,16 +34,18 @@ Do not accept arbitrary metadata keys in anticipation of them.
 Names use the owner-agreed 1–200 Unicode-code-point limit after NFC normalization,
 enforced consistently in application and database validation, not as a byte limit.
 Increasing the limit later requires coordinated validation/constraint changes,
-not truncation or identifier changes. Author requirement and fragment integer
-upper bounds still need a concrete contract.
-The author's earlier optional-field proposal is not treated as owner approval.
+not truncation or identifier changes. Concrete engineering defaults: author is optional/null; when supplied it is
+NFC-normalized, trimmed nonempty plain text of at most 200 code points.
+length_seconds is null or an integer in 1–2147483647; notes_count is an integer
+in 0–2147483647, never null. Reject booleans, fractions and overflow. These
+representational bounds are not a claim of Yousician product maxima.
 The owner clarified that `notes_count` is the integer count of musical notes
 in the fragment. It is not a free-text comment field. Fragment content
 length is separate from elapsed practice-record duration and does not require
 those durations to match.
 
 The owner clarified that Yousician does not provide fragment length: it must be
-measured. Therefore length_seconds may be omitted initially. Proposed canonical
+measured. Therefore length_seconds may be omitted initially. Canonical
 unknown representation is null; a supplied measurement must be strictly positive.
 Do not substitute 0 or infer length from practice duration. As part of an active
 entry metadata update, null clears the measurement.
@@ -79,7 +83,7 @@ Illustrative nested representation, preserving the owner's field types:
 }
 ```
 
-The sample numeric values illustrate types, not settled bounds. Nested arrays represent relationships between separately addressable
+The sample numeric values illustrate valid values within the above bounds. Nested arrays represent relationships between separately addressable
 entries, not permission to mass-assign an entire tree. Existing per-entry
 commands and authorized parent resolution still apply.
 
@@ -89,7 +93,29 @@ explicit policy and migration design. Snapshot attribution and fragment metadata
 capture must be reconciled explicitly with the approved snapshot contract during
 review; no historical snapshot rewrite follows from these new fields.
 
-Before marking the source-schema blocker resolved, select exact
-requiredness/bounds for source fields, then update source validation cases and
-obtain focused independent re-review. Later extensions may add reviewed schema
-versions without silently altering stored entry interpretation.
+## Exact per-node metadata and replacement rules
+
+- Song: only author; omitted on creation becomes null. A metadata replacement
+  must explicitly include author (string or null), preventing accidental erasure.
+- Version: only level; required integer 0–15 on create and replacement.
+- Fragment: only length_seconds and notes_count. Creation defaults omitted
+  length_seconds to null and notes_count to 0. Replacement requires both keys,
+  with the same value/null rules, so omission never silently clears measured data.
+- Common name is required on entry creation and non-null when updated. Common
+  source/instrument/type/parent fields remain outside metadata under C03–C05.
+- Reject all other metadata keys. Guitar/piano use song root -> version ->
+  fragment with a maximum ancestry depth of three nodes. Initial configured
+  practiceable types are version and fragment; song is navigation/grouping only.
+  This practiceability choice is an engineering proposal requiring review, not a
+  previously explicit owner decision; no record may bypass the published policy.
+- Common optional notes/comments remain separate from integer notes_count;
+  this source schema introduces no free-text fragment-notes key.
+
+No author/fragment metadata is added to historical snapshots by this schema.
+Retain the approved minimal source/instrument/ancestor/type/name snapshot and
+immutable definition eligibility binding; these source fields are live catalog
+metadata only. Future attribution/history requirements need explicit review.
+
+Later extensions may add reviewed schema versions without silently altering
+stored entry interpretation. Focused independent reviews passed this contract; its prior missing-source-schema
+design blocker is resolved. Runtime enforcement remains unverified.

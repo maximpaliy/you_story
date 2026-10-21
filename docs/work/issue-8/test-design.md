@@ -160,9 +160,8 @@ of every referenced-resource guard.
 
 BINDING-01: root configured V1, child inherits V1 after default advances to V2;
 metadata edit still validates V1. Mixed-version move denied; no silent upgrade.
-C03/C04 schema expansion is explicitly blocked until the reviewed initial source
-contract supplies level and other exact source fields; do not claim these tests
-are complete or run before that contract exists.
+C03/C04 use the initial Yousician schema expansion below; do not claim execution
+evidence before those cases are implemented and run.
 
 ORDER-01: derive exact expected tuples from F's NFC/C-byte order and numeric
 version/UUID rules. Include case variants, accented and combining forms, equal
@@ -170,3 +169,25 @@ names, versions 2/10, same session timestamp with different record UUIDs, and
 page size 1 across ties. Assert all components/directions for Q03/Q13, cursor
 binding to full tuple and no skip/duplicate under unchanged data. Query source
 keys must be explicitly serialized even when scope components are absent.
+
+## Initial Yousician schema expansion
+
+YS-01 (U/H/D): create song with author absent/null/valid 1–200 code points;
+reject empty/201, unknown keys and version/fragment-only metadata. Version level
+0/15 accepted; absent/null/-1/16/boolean/fraction rejected. YS-02: fragment creation
+absent fields yields null length and zero count; length 1/2147483647 accepted,
+0/-1/2147483648/fraction/boolean rejected; count 0/2147483647 accepted,
+null/-1/overflow/fraction/boolean rejected. YS-03: source metadata replacement
+requires explicit per-node keys, omission of entire metadata leaves unchanged;
+explicit null author/length clears only these fields, never note count/level.
+Each failure leaves versions and existing measurements unchanged. YS-04: validate
+guitar/piano song->version->fragment, max depth three, wrong node metadata and
+invalid parent denied; new schema publication does not reinterpret stored data.
+YS-05: fragment length/count edits leave prior snapshots/statistics unchanged;
+practice duration need not equal content length. YS-06: reject records on song;
+accept active own version/fragment only under initial published practiceability
+policy. That configured practiceability default is reviewable and not assumed
+to be an owner requirement. Extend boundary tests with NFC names/author.
+
+These cases replace the former missing-source-schema placeholder for C03/C04.
+No cases have been executed; review and later real-database evidence are required.

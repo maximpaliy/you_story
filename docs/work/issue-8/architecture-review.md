@@ -1,60 +1,76 @@
 # Independent architecture review — Issue #8
 
-- Review/re-review date: 2026-10-21
-- Reviewer: independent architecture-review agent; read-only review of policy
-  and test materials, with this report saved separately
-- Materials: authorization-spec.md, test-design.md, owner decisions in README.md;
-  AGENTS.md, ADR-002/005/008 and relevant approved architecture
-- Verdict: policy structure ready for owner review, with explicit source-schema
-  block and proposed architecture clarifications still requiring acceptance
+- Latest focused review: 2026-10-21
+- Reviewer: independent architecture-review agent
+- Materials: authorization-spec.md, yousician-content-schema.md, test-design.md,
+  README.md; AGENTS.md, ADR-002/005/008/010 and relevant approved architecture
+- Verdict: pass for the specified MVP authorization design after remediation
 
-This is design review, not application test evidence, implementation approval or
-SEC-07 closure. The source field contract is deliberately incomplete rather than
-filled with invented Yousician bounds. Issue #8 must not be represented as fully
-complete while its acceptance criteria require that missing contract.
+This review evaluates design, not application behavior or executed test results.
+It does not close SEC-07's implementation-evidence gate or authorize production
+deployment. Owner approval is recorded separately by the lead; this reviewer
+cannot supply it on the owner's behalf.
 
-## Initial findings and re-review dispositions
+## Findings and final dispositions
 
-| ID | Severity | Initial finding | Re-review disposition |
+| ID | Severity | Initial finding | Final disposition |
 | --- | --- | --- | --- |
-| AR8-R1 | Medium | C18 lacked a consistency boundary with concurrent entry edit/move/tombstone. | Resolved at policy level. A6 requires transaction-scoped owner guards and coherent snapshot capture until commit; RACE-ENTRY specifies pre/post-transition outcomes and rejects hybrid captures. Actual lock-order/transaction proof remains implementation evidence. |
-| AR8-R2 | Medium | Source-version selection and mixed-version ancestry were implicit. | Resolved as a concrete proposal. B specifies configured published default for roots, parent-version inheritance for children, immutable stored-version validation and rejection of mixed-version subtree moves. BINDING-01 exercises those choices. Owner review remains required; these were not prior approved details. |
-| AR8-R3 | Medium | Retirement races had tests without a governing serialization rule. | Resolved at policy level. A6 requires authoritative state guards for characteristic assignment and statistic addition/initial capture; RACE-DEF and STAT-RACE enumerate permitted ordering outcomes. No raw cross-module table access is authorized. Runtime implementation must prove the guard protocol. |
-| AR8-R4 | Medium | Exact initial source metadata contract was unspecified despite required Yousician level metadata. | Explicitly deferred and blocking affected field-contract completion. B now states C03/C04 cannot proceed without a reviewed initial source definition listing exact fields/types/bounds. Test design marks their concrete schema expansion blocked. This honest blocker is acceptable for reviewing the authorization framework, but the missing schema is not resolved and cannot support a claim that all MVP fields/tests are complete. |
+| AR8-R1 | Medium | Record creation lacked a consistency boundary with entry edit/move/tombstone. | Resolved. A6 requires transaction-scoped owner guards and coherent snapshot capture until commit; RACE-ENTRY specifies pre/post-transition outcomes and rejects hybrid captures. Actual lock-order/transaction proof remains implementation evidence. |
+| AR8-R2 | Medium | Source-version selection and mixed-version ancestry were implicit. | Resolved. B specifies configured published default for roots, parent-version inheritance for children, immutable stored-version validation and rejection of mixed-version subtree moves. BINDING-01 exercises these rules. |
+| AR8-R3 | Medium | Definition retirement races lacked a governing serialization rule. | Resolved. A6 requires authoritative state guards for characteristic assignment and statistic addition/initial capture; RACE-DEF and STAT-RACE enumerate valid ordering outcomes. Owner public ports do not permit raw cross-module table access. |
+| AR8-R4 | Medium | Initial source metadata lacked exact fields/types/bounds, particularly Yousician level. | Resolved in focused review. yousician-content-schema.md defines exact per-node keys, hierarchy, optional author, level 0–15, nullable measured fragment length, creation-default zero note count, integer bounds and full-replacement rules. YS-01–YS-06 replace the former schema placeholder. No missing-source-schema block remains in this specification. |
 
-## Architectural assessment
+## Source contract assessment
 
-The command/query inventory, application-use-case enforcement, trusted actor
+The concrete schema preserves Song -> Version -> Fragment while treating author
+as song metadata rather than adding a new parent/entity. A fragment's unknown
+measured length is represented by null, never inferred from practice duration.
+An initial zero note count is explicitly not evidence of zero musical notes.
+Replacement requires explicit keys so omitted measurement/count fields cannot
+silently erase values or reset them to creation defaults. These distinctions
+are adequately bounded for the MVP and introduce no hierarchy or authorization
+bypass.
+
+Initial practiceability is configured as version/fragment, with song serving as
+navigation/grouping. This does not conflict with approved architecture/ADR-002,
+which delegate practiceable node types to the source definition; the approved
+product definition requires recording against the Yousician catalog but does
+not mandate that song nodes themselves are practiceable. It remains an explicit
+engineering policy default rather than a retrospective claim of earlier owner
+instruction. Published-policy enforcement and the named song-denial/positive
+version-fragment cases make the behavior reviewable. Future changes must follow
+the immutable source-version rules rather than silently reinterpret old records.
+
+Optional author and representational numeric bounds are conservative concrete
+validation defaults, not claims about upstream Yousician maxima. No author or
+fragment measurement field is newly copied into historical snapshots; the
+accepted minimal snapshot remains unchanged. There is no need for additional
+media, author-identity, bulk-create or future-content architecture in this issue.
+
+## Overall architecture assessment
+
+The command/query inventory, owning-use-case authorization, trusted actor
 provenance, private-parent resolution, independent predicates/RLS and shared
 session aggregate concurrency gate fit the approved modular monolith. Personal
-customizations remain separate from source content. Retained practice history
-is not reinterpreted by live catalog mutations. Deferred media/sharing/deletion/
-offline capabilities remain dormant; no speculative distributed infrastructure
-is required.
+customizations stay private and separate from source catalog data. Historical
+statistic eligibility is established by immutable source-definition membership,
+not today's live catalog state. The owner public-port/unit-of-work guard contract
+preserves module boundaries while making concurrent checks meaningful.
 
-The immutable source-definition membership reference in section C is a reasonable
-proposal for proving historical statistic eligibility without copying the whole
-set into each record. It fits the accepted versioned-definition direction, but
-its immutable binding, publication constraints and source-version selection must
-be accepted and documented as architecture clarification before implementation.
+Actual global table identities must reconcile with ADR-008's reviewed manifest
+in the database foundation. Initial OIDC/session wire behavior remains owned by
+Issue #6. Those are explicit implementation/integration dependencies rather than
+new unresolved product decisions inside this authorization matrix.
 
-Exact global table identities must still reconcile with ADR-008's manifest in
-the database foundation; section C does not itself exempt any actual table from
-RLS. Initial OIDC/session contract details remain owned by Issue #6 and must not
-be silently invented under this authorization specification.
+## Documentation synchronization before issue closure
 
-## Remaining gates
+README.md, ADR-010 and status.yaml still contained earlier missing-schema and
+pending-review wording at the time of this focused read. The lead should update
+those dispositions to match the reviewed source contract and separately recorded
+owner decision. This is a durable-record consistency task, not an additional
+architecture decision or a request for repeated owner approval.
 
-1. Supply and review the initial source-definition field contract before claiming
-   complete C03/C04 schemas and corresponding tests.
-2. Obtain owner review of newly proposed schemas/classifications and source
-   binding/historical eligibility clarification; acceptance of the earlier
-   inventory is not blanket acceptance of these added details.
-3. Preserve independent security/test-design review outcomes, then implement and
-   verify the policy in the owning slices. Material architecture decisions must
-   be recorded under docs/architecture/decisions/ according to AGENTS.md before
-   their implementation.
-
-No new architecture defect beyond the explicitly bounded missing source contract
-was found during this focused re-review. Concrete SQL, lock ordering, migrations
-and runtime behavior have not been tested in this documentation-only task.
+No architecture closure blocker remains in the reviewed contract itself. Later
+implementation must still prove its transaction/lock ordering, database role
+separation, query/table manifests, runtime authorization and adversarial cases.
+No application, SQL or browser test was executed by this review.

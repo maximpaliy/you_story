@@ -22,13 +22,15 @@ fields, lifecycle rules, classifications, errors and concurrency contracts, and
 [test design](test-design.md) for named adversarial cases and evidence oracles.
 Proposed architecture clarifications are captured in
 [ADR-010](../../architecture/decisions/010-mvp-authorization-contract.md).
-These are not retrospective owner approval of proposed schemas or runtime
-validation. Independent [architecture](architecture-review.md),
-[security](security-review.md) and [test-design](test-design-review.md) reports
-record focused re-review after remediation: policy/test structure supported;
-initial source metadata schema remains explicitly blocked. In particular,
-Yousician level type/bounds require a reviewed source contract. New proposed
-schemas and material architecture clarifications still need owner review.
+Independent [architecture](architecture-review.md), [security](security-review.md)
+and [test-design](test-design-review.md) reviews now pass after remediation,
+including the [initial source schema](yousician-content-schema.md). Earlier
+missing-schema findings below are historical and resolved by this contract.
+No executable application tests ran. The owner approved the discussed design
+direction; final consolidated acceptance should distinguish the new engineering
+defaults from explicit prior requirements. ADR-010 remains proposed until that
+acceptance. No new material design blocker was found. SEC-07 implementation
+closure and actual database-manifest/locking evidence remain for later slices.
 
 ## Accepted policy and command direction
 
@@ -87,7 +89,7 @@ precise contracts. Proposed private-resource responses remain 401 for absent
 authentication and indistinguishable 404 for missing/inaccessible resources,
 subject to ADR-009 browser-policy failure precedence and final API review.
 
-## Prior independent review outcomes and remaining work
+## Historical independent review outcomes (superseded by focused reports)
 
 Three independent agents reviewed the earlier baseline in this conversation;
 all supported it as a starting point, with changes required. This summary is
@@ -233,3 +235,24 @@ The owner subsequently explicitly approved optional measured fragment length
 (null for unknown) and initial notes_count=0 under those semantics. This scoped
 approval does not mark the entire issue or pending source-contract re-review
 complete.
+
+## Owner approval of discussed design direction
+
+After publication of branch codex/issue-8-authorization-design, the owner
+accepted the decisions based on the discussion and requested final independent
+reviews. This records approval of discussed product/design direction, not
+retrospective acceptance of every new engineering default or production
+deployment. Current source contract and focused review reports supersede the
+historical missing-schema notes above once findings are resolved.
+
+## Final focused review outcome
+
+All three reviewers passed the current design after remediation, including
+YS-01–YS-06. The original missing-source-schema gate is resolved. Conservative
+defaults now specify optional author (max 200 code points), signed-32-bit upper
+bounds for fragment measurements/counts and exact metadata replacement rules.
+The new initial source-policy default permits practice on versions/fragments,
+with songs as grouping nodes; it is identified as an engineering proposal, not
+an owner instruction. Final consolidated acceptance remains distinct from the
+owner's approval of decisions already discussed. These docs do not close the
+live GitHub issue or claim remote issue-body reconciliation.
