@@ -77,7 +77,9 @@
     "identity.tenant",
     "identity.external_identity",
     "identity.invitation",
-    "identity.login_session"
+    "identity.login_session",
+    "identity.login_transaction",
+    "identity.auth_rate_limit"
   ],
   "global": [
     "catalog.source",
@@ -86,5 +88,20 @@
   ],
   "technical": [
     "foundation.schema_revision"
-  ]
+  ],
+  "auth_functions": {
+    "identity._auth_now()": false,
+    "identity._auth_digest(bytea)": false,
+    "identity._auth_lock()": false,
+    "identity._auth_cleanup(timestamp with time zone)": false,
+    "identity._auth_consume(text,bytea,timestamp with time zone)": false,
+    "identity.start_web_login(uuid,bytea,bytea,bytea,text,bytea,text,bytea,text,timestamp with time zone)": true,
+    "identity.claim_web_login(bytea,bytea,text)": true,
+    "identity.fail_web_login(uuid,bytea)": true,
+    "identity.finish_web_login(uuid,bytea,text,text,uuid,bytea,bytea)": true,
+    "identity.resolve_web_session(bytea)": true,
+    "identity.revoke_web_session(bytea)": true,
+    "identity.consume_auth_limit(text,bytea)": true,
+    "identity.mark_catalog_ready(bytea)": true
+  }
 }

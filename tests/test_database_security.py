@@ -12,6 +12,18 @@ from psycopg.types.json import Jsonb
 from tests.db_support import initialize
 
 pytestmark = pytest.mark.postgres
+AUTH_WRAPPERS = {
+    "start_web_login",
+    "claim_web_login",
+    "fail_web_login",
+    "finish_web_login",
+    "resolve_web_session",
+    "revoke_web_session",
+    "consume_auth_limit",
+    "mark_catalog_ready",
+}
+AUTH_HELPERS = {"_auth_now", "_auth_lock", "_auth_digest", "_auth_cleanup", "_auth_consume"}
+
 MANIFEST = json.loads(files("you_story").joinpath("migrations/schema_manifest.json").read_text())
 
 
@@ -109,11 +121,20 @@ def test_exact_catalog_roles_grants_and_policies(db) -> None:
             ("practice", "immutable_columns"),
             ("practice", "immutable_snapshot"),
             ("media", "immutable_columns"),
-        }
+        } | {("identity", name) for name in AUTH_WRAPPERS | AUTH_HELPERS}
         assert all(
-            not r[2] and r[3] and all(not acl.startswith("=") for acl in r[4] or [])
+            r[2] == (r[0] == "identity" and r[1] in AUTH_WRAPPERS)
+            and r[3]
+            and all(not acl.startswith("=") for acl in r[4] or [])
             for r in functions
         )
+        for table in MANIFEST["control"]:
+            assert not connection.execute(
+                "SELECT pg_catalog.has_any_column_privilege('app_runtime',%s,"
+                "'SELECT,INSERT,UPDATE,REFERENCES')",
+                (table,),
+            ).fetchone()[0]
+
         assert (
             connection.execute(
                 "SELECT count(*) FROM pg_default_acl WHERE defaclrole='app_owner'"
@@ -555,7 +576,7 @@ def test_local_private_foreign_keys_are_tenant_composite(db):
             "=rc.relnamespace\n            WHERE k.contype='f' AND n.nspname I"
             "N ('identity','catalog','practice','media')"
         ).fetchall()
-        assert len(rows) == 14
+        assert len(rows) == 15
         for source, target, columns, parent_columns in rows:
             assert source.split(".")[0] == target.split(".")[0]
             if source in MANIFEST["private"] and target in MANIFEST["private"]:
@@ -580,11 +601,11 @@ def test_fixed_full_schema_catalog_oracle(db):
 
     from tests.db_support import catalog_fingerprint
 
-    expected = json.loads((Path(__file__).parent / "fixtures/schema-catalog.json").read_text())
+    expected = json.loads((Path(__file__).parent / "fixtures/schema-catalog-auth.json").read_text())
     with psycopg.connect(db[0]) as connection:
         assert catalog_fingerprint(connection) == expected
         for mutation in [
-            "CREATE TABLE identity.sixth_control_table(id uuid)",
+            "CREATE TABLE identity.unclassified_control_table(id uuid)",
             "ALTER TABLE catalog.entry ALTER COLUMN name DROP NOT NULL",
             "ALTER TABLE catalog.catalog OWNER TO app_runtime",
             'GRANT SELECT ON identity."user" TO app_runtime',

@@ -12,7 +12,7 @@ from you_story.migrations.manifest import (
 )
 
 
-def migrate(dsn: str, target: str = "004_media") -> None:
+def migrate(dsn: str, target: str = "005_identity") -> None:
     """Apply exact reviewed schema revisions without domain callbacks."""
     if target not in REVISION_PATHS:
         raise ValueError("unsupported migration target")
@@ -43,7 +43,7 @@ def migrate(dsn: str, target: str = "004_media") -> None:
             for version in REVISION_PATHS:
                 if version not in applied:
                     sql = migration_sql(version)
-                    validate_migration(version.split("_", 1)[1], sql)
+                    validate_migration(version, sql)
                     with connection.transaction():
                         connection.execute(sql)
                         connection.execute(

@@ -2,8 +2,10 @@
 
 A Python/FastAPI modular monolith for the approved personal catalog and practice
 application. The current executable increment exposes health checks only.
-Issue #9 is **in progress**: authentication/bootstrap functions and the complete
-SEC-01 gate remain blocked by the pending authentication design in Issue #6.
+The database foundation implements ADR-011's seven-table authentication control
+plane and reviewed login/session database functions, with additive upgrades from
+the original foundation. Issue #9's follow-up is ready for owner review. Authentication exposure and complete
+SEC-05 implementation evidence remain in Issue #10.
 No login, catalog/practice operation, sharing, media, deletion or offline feature
 is available. See [Issue #9 evidence](docs/work/issue-9/README.md).
 
@@ -26,8 +28,9 @@ The full test command is destructive only inside the dedicated
 `tools/db-bootstrap.sql`. It refuses missing configuration or another database;
 it never substitutes SQLite, a superuser for runtime isolation, or skipped tests.
 Use `make unit` for the non-PostgreSQL subset. Do not run PostgreSQL suites
-concurrently against the same fixture database. The supported upgrade point is
-`000_security`; tests cover empty-to-head, bootstrap-to-head, every real revision's
+concurrently against the same fixture database. Supported upgrade points are
+`000_security` and the merged `004_media` foundation; tests cover empty-to-head,
+bootstrap-to-head, populated foundation-to-head, every real revision's
 transactional failure/retry, and ledger/checksum mismatch.
 
 After the checks, run migrations as the separate owner process, then start HTTP

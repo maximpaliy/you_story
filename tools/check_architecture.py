@@ -262,6 +262,7 @@ def check_data_inventory(package: Path) -> list[str]:
         "technical-sql.json",
         "migrations/000_security.sql",
         "migrations/schema_manifest.json",
+        "identity/infrastructure/migrations/005_identity.sql",
     }
     allowed.update(
         f"{module}/infrastructure/migrations/{version}_{module}.sql"
