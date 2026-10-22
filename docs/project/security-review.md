@@ -340,3 +340,15 @@ and receive independent implementation security and code review. Rich text,
 active user-controlled URLs, upload forms, framing, third-party scripts,
 credentialed cross-origin browser access, or a changed framework/security
 boundary reopens the affected design and test review.
+
+## Issue #6 authentication design review update
+
+Issue #6 now has a concrete authentication/session contract and AUTH6-01–26
+test design, independently reviewed after remediation. See
+[the issue decision record](../work/issue-6/README.md). SEC-05 remains open:
+owner disposition of proposed ADR-011 amendments and reconciliation with accepted
+ADR-008/009 still precede design completion. No authentication implementation or
+production approval follows from these document reviews. Once design is accepted,
+MVP-07 must still provide runtime OIDC, browser, session/role and adversarial
+evidence plus independent security/code review; deferred clients/linking and
+destructive operations remain their own later gates. No risk is accepted.

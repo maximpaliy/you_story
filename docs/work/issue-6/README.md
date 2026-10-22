@@ -2,12 +2,21 @@
 
 ## Current status
 
-Issue #6 (`MVP-03`) has entered security design. ADR-007 fixes the cookie
-attributes, and the human owner approved the persistent 30-day option documented
-here on 2026-10-03. The remaining session/OIDC lifecycle, security review and
-test-design work must still be completed before implementation.
+Issue #6 (`MVP-03`) now has a concrete [auth/session contract](auth-session-contract.md)
+and [test design](test-design.md). Independent [architecture](architecture-review.md),
+[security](security-review.md) and [test-design](test-design-review.md) reviews
+passed after remediation. Cookie decisions remain approved as before.
 
-No authentication implementation is authorized by this clarification.
+The remaining design gate is owner approval of the explicit
+[ADR-011 amendments](../../architecture/decisions/011-web-login-transaction-and-session-lifecycle.md):
+exact seven-table pre-authentication control plane, narrow validated callback GET
+exception and re-renderable HKDF-derived session CSRF token. Accepted ADR-008/009
+are intentionally not silently rewritten before that approval. Reconcile their
+statements and SEC-05 disposition after acceptance; do not mark Issue #6 complete
+or authentication implementation unblocked before this is done.
+
+No authentication implementation or runtime test has run. SEC-05 remains open
+for implementation evidence even after design approval.
 
 ## Cookie decision baseline
 
@@ -64,7 +73,43 @@ than new choices.
   remaining persistence decision.
 - **Verified:** Reconciled the clarification with ADR-007, SEC-05, and the test
   strategy.
-- **Unresolved:** The remaining Issue #6 lifecycle, OAuth-error, redirect,
-  reauthentication, security-review, and test-design work.
-- **Security review:** Not started; required before authentication implementation.
+- **Unresolved:** Owner disposition of ADR-011's material amendments and
+  subsequent reconciliation with accepted ADR-008/009. Deferred destructive and
+  client/linking flows remain unavailable, not silently approved.
+- **Security review:** Passed after design remediation; runtime evidence pending.
 - **Production implementation:** Not started or authorized.
+
+## Lifecycle and OIDC design draft
+
+The owner authorized completing Issue #6 with reasonable defaults. The
+[auth/session contract](auth-session-contract.md) and [test design](test-design.md)
+now supply concrete lifecycle, callback, invitation, redirect/error and concurrency
+rules. Their review status supersedes the earlier cookie-only progress notes once
+reports below are finalized; they do not claim authentication is implemented.
+
+[ADR-011](../../architecture/decisions/011-web-login-transaction-and-session-lifecycle.md)
+explicitly proposes amendments for durable one-shot pre-authentication
+transactions/shared rate counters, the exact OIDC callback GET exception, and
+re-renderable session-bound CSRF derivation. Accepted ADR-008/009 are not silently
+overwritten. These material amendments require owner approval after independent
+reviews; no runtime schema privilege is granted by drafting them.
+
+Google API access to read the live Issue #6 body remains forbidden. The task is
+based on the repository backlog, accepted ADRs and this conversation; no issue
+comment, issue closure or production deployment has been performed.
+
+## Review completion evidence
+
+- Concrete defaults: 10-minute browser-bound one-shot login; invitation 24-hour
+  lifetime; exact destination enum; seven-day idle/30-day absolute sessions;
+  ten-device-session bound; atomic identity/session/invitation finalization;
+  separate login-only catalog reconciliation; fixed rate limits and lazy bounded
+  cleanup. These are proposed defaults under the owner's instruction, not a
+  claim of prior approval of the material amendments.
+- Reviews resolved browser-binding races, issuance atomicity, signed binder
+  expiry, callback pre-validation authority boundaries, encrypted-verifier
+  tampering, cleanup semantics and per-scope rate-limit oracles.
+- AUTH6-01–26 are designed cases with real browser/public-port/PostgreSQL
+  evidence requirements; none is reported executed.
+- Documentation links/field inventories and whitespace checks were validated.
+  All application logic/dependencies/runtime services remain unchanged.
