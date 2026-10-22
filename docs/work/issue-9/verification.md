@@ -80,3 +80,16 @@ blocks authentication implementation. No full SEC-01 closure, product
 repository/HTTP authorization, production deployment, cloud IAM separation or
 independent operational verification is claimed. See the work README for the
 explicit outstanding acceptance scope.
+
+## Pull-request CI correction
+
+The first GitHub Actions run (39863079926) failed during container initialization,
+before checkout or tests: the runner interpreted the single-quoted health command
+as multiple Docker arguments (`unknown shorthand flag: 'U' in -U`). Local Docker
+shell invocation had accepted that quoting, so local test success did not detect
+this runner-specific error. The service option now uses double quotes, and its
+reviewed deployment-descriptor fingerprint is updated. Focused verification:
+Ruff, source/composition gate and 30 architecture tests passed. Independent
+review is recorded in code-review.md; the PR's GitHub checks retain the remote
+rerun result before merge. No database policy, test or application behavior was
+changed to address this failure.

@@ -283,7 +283,7 @@ def check_data_inventory(package: Path) -> list[str]:
 DEPLOYMENT_CHECKSUMS = {
     "compose.yaml": "a78d62f8a44d364a58e02ae986a3a6845cb12275887b0dc99fc6c0e72100c00c",
     ".github/workflows/checks.yml": (
-        "9d5bfd83b624fd659d0c2d465d24ca4dd33e92819c95150dd6eba6646a074bca"
+        "1ceff4b0f7e16ff99f369afd758184c32fc3d733b3122886cf33d99ba57dc928"
     ),
 }
 

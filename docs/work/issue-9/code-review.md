@@ -125,3 +125,17 @@ its full evidence, then-present product authorization evidence, and Issue #16
 deployed credential separation remain unresolved as recorded in the work
 README/security review. This code-review pass does not waive them or complete
 Issue #9.
+
+## CI health-command quoting correction
+
+Independent reviewer: `/root/architecture_review`, 2026-10-22. **Pass.**
+Reviewed the two-line implementation diff after the PR's container-initialization
+failure: the GitHub Actions service health command now uses double quotes so the
+runner preserves `pg_isready -U postgres -d you_story_issue9_test` as one Docker
+option value. Its frozen deployment-descriptor checksum was updated to the exact
+independently verified SHA-256
+`1ceff4b0f7e16ff99f369afd758184c32fc3d733b3122886cf33d99ba57dc928`.
+No health arguments, checks, grants, test scopes or application behavior changed.
+Independent architecture checks and all 30 architecture tests passed. Remote CI
+must still pass on this corrected revision before merge; local checks do not
+substitute for successful service initialization in GitHub Actions.
