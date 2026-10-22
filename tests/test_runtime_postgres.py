@@ -294,3 +294,24 @@ def test_context_signals_are_observed_and_safe(
     assert all(hasattr(record, "correlation_id") for record in caplog.records)
     assert "secret-content-sentinel" not in caplog.text
     assert str(actor.tenant_id) not in caplog.text
+
+
+@pytest.mark.parametrize(
+    "grant",
+    [
+        "GRANT SELECT ON identity.login_transaction TO app_runtime",
+        "GRANT SELECT (subject_digest) ON identity.auth_rate_limit TO app_runtime",
+    ],
+)
+def test_new_auth_control_plane_grants_make_ready_false(
+    database_settings: tuple[Settings, str, str], db: Database, grant: str
+) -> None:
+    revoke = grant.replace("GRANT SELECT", "REVOKE SELECT").replace(" TO ", " FROM ")
+    with psycopg.connect(database_settings[1]) as owner:
+        owner.execute(grant)
+    try:
+        assert not db.ready()
+    finally:
+        with psycopg.connect(database_settings[1]) as owner:
+            owner.execute(revoke)
+    assert db.ready()

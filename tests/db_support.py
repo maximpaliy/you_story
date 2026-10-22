@@ -29,7 +29,7 @@ def urls() -> tuple[str, str, str]:
     return admin, owner, runtime
 
 
-def initialize(target: str = "004_media") -> tuple[str, str, str]:
+def initialize(target: str = "005_identity") -> tuple[str, str, str]:
     admin, owner, runtime = urls()
     with psycopg.connect(admin, autocommit=True) as connection:
         marker = connection.execute(

@@ -15,6 +15,7 @@ REVISION_PATHS = {
     "002_catalog": "catalog/infrastructure/migrations/002_catalog.sql",
     "003_practice": "practice/infrastructure/migrations/003_practice.sql",
     "004_media": "media/infrastructure/migrations/004_media.sql",
+    "005_identity": "identity/infrastructure/migrations/005_identity.sql",
 }
 
 
@@ -28,6 +29,7 @@ REVIEWED_CHECKSUMS = {
     "002_catalog": "d8124495463d4179ed62b711a709af68f847e9871ed13928af38b36510800f60",
     "003_practice": "4be1452ba450c3bce52105fcc5c1a280b36b29921ab1a551502127229cf15115",
     "004_media": "a941bacb7712493f6e6ea1896c4c1e28591c79e53b6c0753e389f74e2576e0ce",
+    "005_identity": "4cad83d3b26ad8dab1abbb2666c21ed1a6db7c088cec844745009d55c91e04bc",
 }
 
 
@@ -46,11 +48,17 @@ def validate_migration(owner: str, sql: str) -> None:
     def statements(text: str) -> Any:
         return json.loads(parser.parse_sql_json(text))["stmts"]
 
-    versions = [v for v in REVISION_PATHS if v.split("_", 1)[1] == owner]
-    if len(versions) != 1:
+    versions = (
+        [owner]
+        if owner in REVISION_PATHS
+        else [v for v in REVISION_PATHS if v.split("_", 1)[1] == owner]
+    )
+    if not versions:
         raise ValueError("unreviewed migration owner")
-    reviewed = migration_sql(versions[0])
-    if hashlib.sha256(reviewed.encode()).hexdigest() != REVIEWED_CHECKSUMS[versions[0]]:
-        raise ValueError("unreviewed packaged migration checksum")
-    if statements(sql) != statements(reviewed):
+    for version in versions:
+        reviewed = migration_sql(version)
+        if hashlib.sha256(reviewed.encode()).hexdigest() != REVIEWED_CHECKSUMS[version]:
+            raise ValueError("unreviewed packaged migration checksum")
+    candidate = statements(sql)
+    if not any(candidate == statements(migration_sql(version)) for version in versions):
         raise ValueError("unreviewed migration AST/classification")
