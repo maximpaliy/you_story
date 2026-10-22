@@ -2,12 +2,18 @@
 
 ## Current status
 
-Issue #6 (`MVP-03`) has entered security design. ADR-007 fixes the cookie
-attributes, and the human owner approved the persistent 30-day option documented
-here on 2026-10-03. The remaining session/OIDC lifecycle, security review and
-test-design work must still be completed before implementation.
+Issue #6 (`MVP-03`) now has a concrete [auth/session contract](auth-session-contract.md)
+and [test design](test-design.md). Independent [architecture](architecture-review.md),
+[security](security-review.md) and [test-design](test-design-review.md) reviews
+passed after remediation. Cookie decisions remain approved as before.
 
-No authentication implementation is authorized by this clarification.
+The owner approved [ADR-011](../../architecture/decisions/011-web-login-transaction-and-session-lifecycle.md)
+on 2026-10-22. ADR-008/009 now incorporate the seven-table control-plane,
+validated callback GET and HKDF CSRF amendments. **Issue #6's design scope is
+complete and ready for merge and GitHub issue closure.** This records design
+acceptance, not permission to bypass other feature/test gates or production
+approval. SEC-05 remains open for MVP-07 implementation evidence and independent
+security/code review; no application tests or authentication implementation ran.
 
 ## Cookie decision baseline
 
@@ -64,7 +70,62 @@ than new choices.
   remaining persistence decision.
 - **Verified:** Reconciled the clarification with ADR-007, SEC-05, and the test
   strategy.
-- **Unresolved:** The remaining Issue #6 lifecycle, OAuth-error, redirect,
-  reauthentication, security-review, and test-design work.
-- **Security review:** Not started; required before authentication implementation.
+- **Unresolved:** No remaining Issue #6 design blocker; implementation evidence remains later. Deferred destructive and
+  client/linking flows remain unavailable, not silently approved.
+- **Security review:** Passed after design remediation; runtime evidence pending.
 - **Production implementation:** Not started or authorized.
+
+## Lifecycle and OIDC design draft
+
+The owner authorized completing Issue #6 with reasonable defaults. The
+[auth/session contract](auth-session-contract.md) and [test design](test-design.md)
+now supply concrete lifecycle, callback, invitation, redirect/error and concurrency
+rules. Their review status supersedes the earlier cookie-only progress notes once
+reports below are finalized; they do not claim authentication is implemented.
+
+[ADR-011](../../architecture/decisions/011-web-login-transaction-and-session-lifecycle.md)
+explicitly proposes amendments for durable one-shot pre-authentication
+transactions/shared rate counters, the exact OIDC callback GET exception, and
+re-renderable session-bound CSRF derivation. The owner approved these material amendments after independent reviews;
+ADR-008/009 now explicitly incorporate them. No runtime schema privilege was
+granted by editing documentation.
+
+Google API access to read the live Issue #6 body remains forbidden. The task is
+based on the repository backlog, accepted ADRs and this conversation; no issue
+comment, issue closure or production deployment has been performed.
+
+## Review completion evidence
+
+- Concrete defaults: 10-minute browser-bound one-shot login; invitation 24-hour
+  lifetime; exact destination enum; seven-day idle/30-day absolute sessions;
+  ten-device-session bound; atomic identity/session/invitation finalization;
+  separate login-only catalog reconciliation; fixed rate limits and lazy bounded
+  cleanup. These defaults and amendments now have explicit owner approval following
+  independent review.
+- Reviews resolved browser-binding races, issuance atomicity, signed binder
+  expiry, callback pre-validation authority boundaries, encrypted-verifier
+  tampering, cleanup semantics and per-scope rate-limit oracles.
+- AUTH6-01–27 are designed cases with real browser/public-port/PostgreSQL
+  evidence requirements; none is reported executed.
+- Documentation links/field inventories and whitespace checks were validated.
+  All application logic/dependencies/runtime services remain unchanged.
+
+## Approval and completion
+
+The owner approved the reviewed amendments on 2026-10-22 after an explanation of
+request-triggered state, cleanup, counters and key requirements. Approval records
+a product/architecture decision; it does not substitute for independent security
+judgment or accept any security risk. Reconciliation was checked against the
+reviewed contract and inventories. GitHub closure/merge are not performed by
+this local design-complete status.
+
+## GitHub PR #23 review follow-up
+
+The [transaction UUID / verifier-encryption comment](https://github.com/maximpaliy/you_story/pull/23#discussion_r4353817634)
+identified an ordering conflict in start_web_login. Trusted application code now
+generates the transaction UUID before encryption and supplies that same UUID to
+the fixed owner function. HTTP callers cannot select it; duplicate UUIDs cannot
+overwrite an existing row. AUTH6-27 covers round-trip decryption, wrong-ID
+substitution, duplicate rejection and fresh encryption on a new-ID retry.
+This corrects the implementability of the accepted AEAD boundary without adding
+new database access, ciphertext update/reservation APIs or product behavior.

@@ -191,7 +191,8 @@ with reviewed grant-aware scope tests rather than weakening/removing them.
 
 ### TD-11 — Pre-authentication identity bootstrap
 
-Catalog assertions prove the five-table control-plane manifest, `app_owner`
+Catalog assertions prove the seven-table control-plane manifest as amended by
+accepted ADR-011 (the original Issue #5 baseline was five tables), `app_owner`
 ownership, exact table/function ACLs and the intentional no-RLS exception. They
 also prove `app_runtime` cannot authenticate or assume owner. As runtime, direct
 reads/writes of user,

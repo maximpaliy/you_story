@@ -132,7 +132,7 @@ a missing or wrong repository predicate cannot expose or mutate another tenant.
 Repository scoping does not authorize an action: the use case still checks the
 approved ownership/grant/action matrix before calling the repository.
 
-Global reference queries and the five pre-authentication control-plane tables are
+Global reference queries and the seven pre-authentication control-plane tables are
 the reviewed exceptions. Global tables are reconciled with their manifest.
 Control-plane access occurs only through fixed privileged functions and is never
 disguised as an unscoped normal repository.
@@ -165,19 +165,20 @@ External-identity lookup, invitation and first-login bootstrap occur before a
 tenant `ActorContext` exists. The identity module therefore maintains a reviewed
 third table category, **authentication control plane**, distinct from tenant-
 private data and global reference data. The category contains only `identity.user`, `identity.tenant`,
-`identity.external_identity`, `identity.invitation` and `identity.login_session`
-and is a checked five-table manifest. User, external identity and invitation do
+`identity.external_identity`, `identity.invitation`, `identity.login_session`,
+`identity.login_transaction` and `identity.auth_rate_limit`, forming a checked
+seven-table manifest under accepted ADR-011. User, external identity and invitation do
 not carry a tenant ID before linkage; tenant is itself the tenant identity. Login
 sessions carry the linked user and tenant IDs but their cookie digest must be
 resolved before `ActorContext` exists. These tables are never queried by ordinary
 domain repositories.
 
-`app_owner` owns these five tables and their narrowly scoped security-definer
-functions. The five control-plane tables do not use tenant RLS; isolation is the
+`app_owner` owns these seven tables and their narrowly scoped security-definer
+functions. The seven control-plane tables do not use tenant RLS; isolation is the
 deny-by-default ACL plus the reviewed function boundary. `PUBLIC` and
-`app_runtime` have no direct table or sequence privilege. The closed five-table
+`app_runtime` have no direct table or sequence privilege. The closed seven-table
 manifest, absence of RLS, `app_owner` ownership and exact ACLs are catalog-tested
-as an explicit exception; any sixth table fails CI. Because `app_owner` owns all
+as an explicit exception; any unlisted eighth table fails CI. Because `app_owner` owns all
 application objects, every security-definer function uses fully qualified
 objects, a fixed safe search path, least-result contracts and an explicit runtime
 execute grant; no generic privileged function is permitted.
@@ -203,9 +204,16 @@ and concurrent consumption return one stable non-enumerating failure and create
 nothing. The function cannot accept tenant, user, owner-grant or visibility IDs
 from a client. Session lookup exposes no digest or identity attributes and gives
 the same result shape for unknown, expired, revoked or wrong-context sessions.
-SEC-05 owns cookie/session lifecycle and Issue #6 may narrow these contracts; any
-expansion of table access, function result or execute audience returns to this
-review. This ADR owns the database privilege and isolation boundary.
+Accepted [ADR-011](011-web-login-transaction-and-session-lifecycle.md) and the
+[Issue #6 contract](../../work/issue-6/auth-session-contract.md) narrow runtime
+bootstrap access to the named finish_web_login wrapper: identity bootstrap,
+invitation consumption, session issuance and successful login finalization share
+one identity transaction. Low-level bootstrap helpers are not independently
+runtime executable. The separate catalog transaction below remains unchanged.
+The added transaction/rate functions have only the fixed inputs/results and
+bounded cleanup/capacity behavior listed in that contract; no generic setter or
+direct table access is introduced. Future expansion of table access, function
+result or execute audience returns to independent review. This ADR owns the database privilege and isolation boundary.
 
 `identity.user(id, state)` and `identity.tenant(id, owner_user_id, state)` use
 opaque UUIDs; `tenant.owner_user_id` is a non-null unique foreign key so one user
@@ -472,3 +480,12 @@ pass independent security/code review; Issue #16 must prove deployed owner/
 runtime credential separation.
 
 Decision: approved.
+
+## ADR-011 approved amendment
+
+On 2026-10-22 the owner approved the independently reviewed amendments for the
+exact seven-table control-plane manifest, named narrow runtime wrappers and
+atomic login finalization. Earlier five-table counts in historical review
+records describe the pre-amendment baseline, not the current permitted schema.
+All seven-table ACL/function/capacity tests and real-role evidence remain required
+in implementation. No SQL or runtime privilege was changed by this document.

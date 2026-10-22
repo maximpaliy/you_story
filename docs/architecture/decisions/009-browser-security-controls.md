@@ -16,9 +16,13 @@ be forced through browser-only controls.
 
 ## Decision
 
-Use a session-bound synchronizer CSRF token. Generate 32 bytes (256 bits) with
-the operating-system CSPRNG and encode as unpadded base64url (exactly 43 ASCII
-characters). Store with the authenticated session only a SHA-256 digest of the
+Use a session-bound synchronizer CSRF token. Under accepted ADR-011, derive
+32 bytes via standard HKDF-SHA256 from the raw 32-byte OS-CSPRNG session bearer,
+with salt=internal session UUID bytes and info=you-story:csrf:v1; encode as
+unpadded base64url (exactly 43 ASCII characters). The raw bearer is available
+transiently from the validated cookie, allowing the same token to be re-rendered
+without reversible CSRF storage. This replaces only the independent-random
+CSRF generation rule, not CSP nonce generation. Store with the authenticated session only a SHA-256 digest of the
 UTF-8 domain separator `you-story:csrf:v1`, a zero byte, the internal session
 row UUID bytes, a zero byte and the raw token. Compare fixed-length digests
 without secret-dependent timing. Expose the raw token only in a hidden field in
@@ -62,8 +66,16 @@ cross-origin credential permission. Bearer-token and webhook clients receive
 separately reviewed provenance controls. Middleware classifies the boundary from
 validated authentication scheme, not paths or arbitrary credential presence; an
 ambient session cookie cannot bypass browser controls by adding another
-credential. `GET`, `HEAD` and `OPTIONS` never perform application mutation, and
-logout is an unsafe protected request.
+credential. Product `GET`, `HEAD` and `OPTIONS` never perform domain mutation;
+logout is an unsafe protected request. Accepted ADR-011 provides the single exact
+Google OIDC callback GET exception: bounded pre-validation rate/transaction
+claim/terminalization/cleanup writes are allowed; identity/session authority and
+login-only catalog orchestration require a valid browser-bound single claim and
+full OIDC validation. HEAD cannot dispatch it. Ordinary GET /login may set only
+its signed anti-CSRF browser binder and render its proof, not provision identity
+or session. Session resolution may atomically touch last_seen as specified in
+Issue #6; this grants no domain-command GET route. No other GET exemption or
+ambient-cookie bypass is authorized.
 
 All first-increment user-authored values are plain text. Use contextual template
 auto-escaping, JSON serialization and safe DOM text APIs. Raw/template-safe
@@ -150,3 +162,11 @@ sensitive telemetry and must not be logged or retained in test artifacts.
 
 The human owner approved choices `1A`, `2A`, `3A` and `4A` on 2026-10-06. This
 approves the design direction, not implementation or any residual risk.
+
+## ADR-011 approval
+
+The owner approved these amendments on 2026-10-22 after independent architecture,
+security and test-design reviews. See [ADR-011](011-web-login-transaction-and-session-lifecycle.md)
+and the [Issue #6 contract](../../work/issue-6/auth-session-contract.md) for exact
+callback, token and browser-binding rules. CSP nonces remain independent fresh
+CSPRNG values. No security risk is accepted; implementation evidence is pending.

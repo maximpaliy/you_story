@@ -118,7 +118,7 @@ specifications. Read audience is authenticated product users; no anonymous
 reference endpoints. Publication is reviewed app_owner setup/migration work,
 not a user command. Do not exempt any actual table from RLS until its exact
 schema/table identity is reconciled with ADR-008's manifest and reviewed in the
-foundation issue. Identity's five-table control plane remains its separate
+foundation issue. Identity's seven-table control plane under accepted ADR-011 remains its separate
 reviewed exception, not global product reference data.
 
 User-created characteristic definitions, assignments, customizations, catalogs,
