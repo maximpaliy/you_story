@@ -1,7 +1,7 @@
 # Web authentication and session contract — Issue #6
 
-Status: proposed implementation-ready design, pending independent review and
-owner disposition of explicit ADR-011 amendments. Existing ADR-007 choices are
+Status: independently reviewed design; ADR-011 amendments approved by the owner
+on 2026-10-22 and reconciled in ADR-008/009. Existing ADR-007 choices are
 preserved. This is documentation, not running authentication or a deployed API.
 
 ## 1. Boundaries and approved baseline
@@ -81,9 +81,9 @@ the original binder expiry and cannot outlive it.
 Reuse of a submitted start proof cannot restore an invalidated transaction.
 Do not put invitation tokens or destination in state or redirect URLs.
 
-## 3. Durable transaction exception (ADR-011 proposal)
+## 3. Durable transaction exception (accepted ADR-011)
 
-ADR-008 currently lists exactly five control-plane tables. Propose adding
+The pre-ADR-011 baseline listed five control-plane tables. Accepted ADR-011 adds
 identity.login_transaction as a sixth: UUID, state_digest UNIQUE, nonce_digest,
 binder_digest, PKCE challenge, encrypted_verifier, client_config_id,
 invitation_digest nullable, destination enum, status, created_at/expires_at,
@@ -93,9 +93,9 @@ Claimed transactions can never return to pending, including timeout/crash.
 
 This is an explicit reviewed amendment, not a disguised RLS exemption or reuse
 of linked session rows as anonymous sessions. app_owner owns it; no tenant RLS;
-PUBLIC/app_runtime have no direct table/sequence access. Section 8 additionally proposes identity.auth_rate_limit as a seventh table
+PUBLIC/app_runtime have no direct table/sequence access. Section 8 additionally includes identity.auth_rate_limit as a seventh table
 for cross-replica bounded counters. Update exact table and ACL inventories from
-five to seven only after this amendment is accepted. Existing
+five to seven under the approved amendment. Existing
 five remain unchanged. No generic state update or all-tenant function is added.
 
 Narrow fixed security-definer contracts (fully qualified objects, fixed safe
@@ -241,7 +241,7 @@ must recheck revocation/deadlines atomically. Future privilege changes must rota
 session+CSRF and revoke old credentials atomically, but no privilege-change API
 is introduced now.
 
-## 7. CSRF token re-rendering (explicit ADR-009 amendment proposal)
+## 7. CSRF token re-rendering (accepted ADR-009 amendment)
 
 ADR-009 requires a stable session token delivered in authenticated HTML and only
 its digest persisted, but independently random raw tokens cannot be reconstructed
@@ -333,8 +333,9 @@ worker or hidden GET/domain provisioning side effect is added.
 ## 9. Finish boundary
 
 No runtime, credentials, routes or infrastructure are created by this document.
-Issue #6 can finish design only after precise tests/reviews, owner approval of
-material amendments and reconciliation with ADR-008/009. SEC-05 remains open for
+Issue #6 design requirements are complete: the documented test design and
+contract passed independent reviews, and owner-approved amendments are
+reconciled with ADR-008/009. SEC-05 remains open for
 MVP-07 implementation evidence and independent security/code review. Existing
 ADR-008 tenant isolation and ADR-009 browser controls remain independent gates.
 

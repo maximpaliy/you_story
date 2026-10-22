@@ -7,16 +7,13 @@ and [test design](test-design.md). Independent [architecture](architecture-revie
 [security](security-review.md) and [test-design](test-design-review.md) reviews
 passed after remediation. Cookie decisions remain approved as before.
 
-The remaining design gate is owner approval of the explicit
-[ADR-011 amendments](../../architecture/decisions/011-web-login-transaction-and-session-lifecycle.md):
-exact seven-table pre-authentication control plane, narrow validated callback GET
-exception and re-renderable HKDF-derived session CSRF token. Accepted ADR-008/009
-are intentionally not silently rewritten before that approval. Reconcile their
-statements and SEC-05 disposition after acceptance; do not mark Issue #6 complete
-or authentication implementation unblocked before this is done.
-
-No authentication implementation or runtime test has run. SEC-05 remains open
-for implementation evidence even after design approval.
+The owner approved [ADR-011](../../architecture/decisions/011-web-login-transaction-and-session-lifecycle.md)
+on 2026-10-22. ADR-008/009 now incorporate the seven-table control-plane,
+validated callback GET and HKDF CSRF amendments. **Issue #6's design scope is
+complete and ready for merge and GitHub issue closure.** This records design
+acceptance, not permission to bypass other feature/test gates or production
+approval. SEC-05 remains open for MVP-07 implementation evidence and independent
+security/code review; no application tests or authentication implementation ran.
 
 ## Cookie decision baseline
 
@@ -73,8 +70,7 @@ than new choices.
   remaining persistence decision.
 - **Verified:** Reconciled the clarification with ADR-007, SEC-05, and the test
   strategy.
-- **Unresolved:** Owner disposition of ADR-011's material amendments and
-  subsequent reconciliation with accepted ADR-008/009. Deferred destructive and
+- **Unresolved:** No remaining Issue #6 design blocker; implementation evidence remains later. Deferred destructive and
   client/linking flows remain unavailable, not silently approved.
 - **Security review:** Passed after design remediation; runtime evidence pending.
 - **Production implementation:** Not started or authorized.
@@ -90,9 +86,9 @@ reports below are finalized; they do not claim authentication is implemented.
 [ADR-011](../../architecture/decisions/011-web-login-transaction-and-session-lifecycle.md)
 explicitly proposes amendments for durable one-shot pre-authentication
 transactions/shared rate counters, the exact OIDC callback GET exception, and
-re-renderable session-bound CSRF derivation. Accepted ADR-008/009 are not silently
-overwritten. These material amendments require owner approval after independent
-reviews; no runtime schema privilege is granted by drafting them.
+re-renderable session-bound CSRF derivation. The owner approved these material amendments after independent reviews;
+ADR-008/009 now explicitly incorporate them. No runtime schema privilege was
+granted by editing documentation.
 
 Google API access to read the live Issue #6 body remains forbidden. The task is
 based on the repository backlog, accepted ADRs and this conversation; no issue
@@ -104,8 +100,8 @@ comment, issue closure or production deployment has been performed.
   lifetime; exact destination enum; seven-day idle/30-day absolute sessions;
   ten-device-session bound; atomic identity/session/invitation finalization;
   separate login-only catalog reconciliation; fixed rate limits and lazy bounded
-  cleanup. These are proposed defaults under the owner's instruction, not a
-  claim of prior approval of the material amendments.
+  cleanup. These defaults and amendments now have explicit owner approval following
+  independent review.
 - Reviews resolved browser-binding races, issuance atomicity, signed binder
   expiry, callback pre-validation authority boundaries, encrypted-verifier
   tampering, cleanup semantics and per-scope rate-limit oracles.
@@ -113,3 +109,12 @@ comment, issue closure or production deployment has been performed.
   evidence requirements; none is reported executed.
 - Documentation links/field inventories and whitespace checks were validated.
   All application logic/dependencies/runtime services remain unchanged.
+
+## Approval and completion
+
+The owner approved the reviewed amendments on 2026-10-22 after an explanation of
+request-triggered state, cleanup, counters and key requirements. Approval records
+a product/architecture decision; it does not substitute for independent security
+judgment or accept any security risk. Reconciliation was checked against the
+reviewed contract and inventories. GitHub closure/merge are not performed by
+this local design-complete status.

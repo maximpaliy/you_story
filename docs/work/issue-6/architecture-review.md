@@ -66,3 +66,12 @@ must preserve proposed status until owner disposition of ADR-011's explicit
 seven-table control-plane and GET/CSRF amendments, then reconcile the accepted
 ADR-008/009 text and manifests. No credentials, running endpoints, SQL migrations
 or executable authentication tests were produced by this review.
+
+## Post-approval reconciliation check
+
+After explicit owner approval, the independent architecture reviewer checked
+the ADR-008/009/011 reconciliation and related manifest/status updates. Verdict:
+pass; the diff preserves the reviewed contract, records accepted amendments and
+gate dispositions, and introduces no scope creep or new architecture blocker.
+SEC-05 implementation evidence remains open; no production permission is implied.
+The stale project-summary status identified in that check was also updated.

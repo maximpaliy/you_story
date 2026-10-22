@@ -1,6 +1,6 @@
 # ADR-011: Durable web login and session lifecycle
 
-- Status: Proposed — material amendments require owner approval
+- Status: Accepted — owner approved 2026-10-22
 - Related issue: #6 / MVP-03
 - Baseline: accepted ADR-007/008/009 and Issue #6 cookie decision
 
@@ -14,10 +14,10 @@ ADR-009's stable independent random CSRF token cannot be recovered from its
 stored digest for rendering later pages. These gaps require explicit proposals,
 not silent changes to already accepted isolation or cryptographic contracts.
 
-## Proposed decision
+## Decision
 
 Adopt the concrete [authentication contract](../../work/issue-6/auth-session-contract.md)
-and [test design](../../work/issue-6/test-design.md) after reviews and approval.
+and [test design](../../work/issue-6/test-design.md) as independently reviewed and owner-approved.
 
 1. Amend ADR-008's exact authentication-control-plane manifest from five to seven
    tables by adding identity.login_transaction and identity.auth_rate_limit.
@@ -53,11 +53,10 @@ the existing bearer needs no reversible stored session credential.
 ## Consequences, review and rollback
 
 This adds bounded pre-auth database state, cleanup/counter work and application
-key requirements. Owner must approve control-plane expansion and browser/crypto
-amendments after independent reviews; this proposal does not change accepted
-ADR-008/009 in place. On acceptance, their exact statements must be amended and
-linked here, with manifests/role tests updated before implementation. If rejected,
-redesign these parts; do not implement an undocumented bypass.
+key requirements. The owner approved the control-plane expansion and browser/
+crypto amendments on 2026-10-22 after independent reviews. ADR-008/009 now
+incorporate the exact amendments and link here. Manifests/role tests must match
+before implementation is accepted; no undocumented bypass is authorized.
 
 No account linking, mobile/Telegram, privileged action UI, worker or infrastructure
 is enabled. Issue #6 design completion does not close runtime SEC-05 evidence.
@@ -71,5 +70,5 @@ remediation. Findings and their dispositions remain recorded in those reports.
 No runtime evidence or owner acceptance is supplied by independent review.
 The signed nonrenewing binder envelope and exact function inventory in contract
 sections 2/10 are part of the reviewed design. No unresolved review finding
-requires further feature scope; only material amendment acceptance and accepted
-ADR reconciliation remain before design completion.
+requires further feature scope. Owner approval and ADR reconciliation are now
+recorded; runtime verification remains for the implementing slices.
