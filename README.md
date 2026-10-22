@@ -1,8 +1,70 @@
-# Codex AI Team Bootstrap
+# You Story
 
-A GitHub-centered starter repository for a disciplined multi-agent Codex workflow.
+A Python/FastAPI modular monolith for the approved personal catalog and practice
+application. The current executable increment exposes health checks only.
+Issue #9 is **in progress**: authentication/bootstrap functions and the complete
+SEC-01 gate remain blocked by the pending authentication design in Issue #6.
+No login, catalog/practice operation, sharing, media, deletion or offline feature
+is available. See [Issue #9 evidence](docs/work/issue-9/README.md).
 
-The design intentionally uses a small set of durable roles plus focused specialist skills. Current OpenAI guidance favors modular skills and contextual instructions rather than bloated permanent prompts, so the repository keeps role instructions short and puts technology-specific review guidance in skills.
+## Local development and verification
+
+Requirements: Python 3.12.14, uv 0.12.19, Docker with Compose. All commands below
+use synthetic data and public, localhost-only fixture passwords. Never use these
+credentials or the fixture bootstrap in a shared/deployed environment.
+
+```sh
+docker compose up -d --wait db
+make sync
+export TEST_ADMIN_URL=postgresql://postgres:local-fixture-only@127.0.0.1:55439/you_story_issue9_test
+export TEST_DATABASE_CONFIRM=disposable
+make check
+```
+
+The full test command is destructive only inside the dedicated
+`you_story_issue9_test` database carrying the fixture marker installed by
+`tools/db-bootstrap.sql`. It refuses missing configuration or another database;
+it never substitutes SQLite, a superuser for runtime isolation, or skipped tests.
+Use `make unit` for the non-PostgreSQL subset. Do not run PostgreSQL suites
+concurrently against the same fixture database. The supported upgrade point is
+`000_security`; tests cover empty-to-head, bootstrap-to-head, every real revision's
+transactional failure/retry, and ledger/checksum mismatch.
+
+After the checks, run migrations as the separate owner process, then start HTTP
+with only the runtime credential:
+
+```sh
+MIGRATION_DATABASE_URL=postgresql://app_owner:owner-fixture@127.0.0.1:55439/you_story_issue9_test \
+  uv run --frozen python -m you_story.migrations
+YOU_STORY_DATABASE_URL=postgresql+psycopg://app_runtime:runtime-fixture@127.0.0.1:55439/you_story_issue9_test \
+  uv run --frozen uvicorn you_story.app:create_app --factory --host 127.0.0.1 --port 8000
+```
+
+`GET /live` checks the process; `GET /ready` checks bounded database access,
+actual runtime identity/privileges and the exact migration ledger. Errors use a
+safe envelope and server-generated `X-Correlation-ID`. Interactive API docs and
+product routes are absent. The reviewed generated contract is
+[docs/api/openapi.json](docs/api/openapi.json); `make openapi` regenerates it for
+review. Runtime configuration has no owner-credential field and startup performs
+no migration. Keep owner/runtime credentials in separate processes.
+
+Migrations live under each owning module; the controlled runner alone can apply
+packaged, reviewed schema revisions. A failure rolls back its current revision;
+fix the cause and rerun the same command. Never edit an applied revision, weaken
+RLS or backfill tenant data through this runner. New migrations, supported
+upgrade points, SQL registrations and deployment commands require reviewed
+manifest updates. No production resources are provisioned here.
+
+`docker compose stop db` stops the local fixture without deleting its data.
+The source and built wheel are checked for module boundaries and unregistered
+execution roots. CI runs the same lint/type/architecture/contract/PostgreSQL/
+migration/package checks. Dependency, artifact, cloud-IAM, vulnerability and
+production operational gates remain owned by later platform issues.
+
+## Development workflow
+
+The repository uses the GitHub-centered review workflow below. Keep requirements,
+architecture, tests and review evidence as durable project memory.
 
 ## Durable roles
 

@@ -1,0 +1,90 @@
+{
+  "private": {
+    "identity.user_preference": {
+      "mutable": true,
+      "freeze": [
+        "tenant_id",
+        "id",
+        "user_id"
+      ]
+    },
+    "catalog.catalog": {
+      "mutable": true,
+      "freeze": [
+        "tenant_id",
+        "id"
+      ]
+    },
+    "catalog.catalog_grant": {
+      "mutable": true,
+      "freeze": [
+        "tenant_id",
+        "id",
+        "catalog_id",
+        "grantee_tenant_id",
+        "role"
+      ]
+    },
+    "catalog.entry": {
+      "mutable": true,
+      "freeze": [
+        "tenant_id",
+        "id",
+        "source_id",
+        "source_definition_id"
+      ]
+    },
+    "practice.session": {
+      "mutable": true,
+      "freeze": [
+        "tenant_id",
+        "id"
+      ]
+    },
+    "practice.record": {
+      "mutable": true,
+      "freeze": [
+        "tenant_id",
+        "id",
+        "session_id",
+        "catalog_entry_id"
+      ]
+    },
+    "practice.content_snapshot": {
+      "mutable": false,
+      "freeze": [
+        "tenant_id",
+        "id"
+      ]
+    },
+    "media.upload_intent": {
+      "mutable": true,
+      "freeze": [
+        "tenant_id",
+        "id"
+      ]
+    },
+    "media.attachment": {
+      "mutable": true,
+      "freeze": [
+        "tenant_id",
+        "id"
+      ]
+    }
+  },
+  "control": [
+    "identity.user",
+    "identity.tenant",
+    "identity.external_identity",
+    "identity.invitation",
+    "identity.login_session"
+  ],
+  "global": [
+    "catalog.source",
+    "catalog.instrument",
+    "catalog.source_definition"
+  ],
+  "technical": [
+    "foundation.schema_revision"
+  ]
+}

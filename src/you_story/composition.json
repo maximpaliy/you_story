@@ -1,0 +1,7 @@
+{
+  "http": "you_story.app:create_app",
+  "migration": "you_story.migrations",
+  "private_statements": [],
+  "workers": [],
+  "media_adapters": []
+}
