@@ -67,9 +67,16 @@ before a fresh flow; no retry endpoint recovers raw tokens. Then redirect (303) 
 endpoint. PKCE verifier/state/nonce each have 32 OS-CSPRNG bytes, encoded unpadded
 base64url; state/nonce are 43 chars and PKCE S256 uses the verifier. Persist only
 state/nonce/binder digests and PKCE challenge plus an authenticated-encrypted
-PKCE verifier. Envelope uses an established AEAD implementation with random
+PKCE verifier. Before encryption, trusted identity application code generates a
+fresh transaction UUID using the server UUID generator; it is never accepted
+from HTTP/form input. Envelope uses an established AEAD implementation with random
 nonce and transaction ID/client ID as associated data; key injected securely,
 separate from database credentials. No cryptographic implementation from scratch.
+Pass that same UUID and ciphertext to start_web_login, which inserts the exact
+UUID and returns it unchanged. A duplicate UUID fails without changing an
+existing transaction; never upsert or substitute a different UUID after encryption.
+If creation is retried with a new UUID, re-encrypt with that UUID's associated
+data and a fresh AEAD nonce. No reservation or ciphertext-update function is added.
 Return destination and optional invitation digest are server-bound to transaction.
 Expiry is now+600 seconds, based on database time. Browser binder cookie is not
 rotated during start, so tabs share it; newest pending start wins only before
@@ -349,7 +356,7 @@ are fixed-length byte strings, config/destination/scope inputs closed enums.
 
 | Runtime callable identity function | Typed input / least-result output |
 | --- | --- |
-| start_web_login | binder_digest,state_digest,nonce_digest,challenge,encrypted_verifier,configured_client_id,invitation_digest?,destination,binder_expiry -> transaction UUID+effective expiry OR generic start failure |
+| start_web_login | server_generated_transaction_uuid,binder_digest,state_digest,nonce_digest,challenge,encrypted_verifier,configured_client_id,invitation_digest?,destination,binder_expiry -> same transaction UUID+effective expiry OR generic start failure |
 | claim_web_login | state_digest,binder_digest,configured_client_id -> claimed UUID+nonce digest+one encrypted verifier+challenge+bound config/invitation/destination; same generic failure for all invalid states |
 | fail_web_login | claimed UUID+binder_digest -> terminal success/failure only; never resets claim |
 | finish_web_login | claimed UUID+binder_digest,validated canonical issuer/subject,server session UUID+session_digest+csrf_digest -> minimal linked user/tenant/session UUIDs+provisioning state+absolute expiry OR generic failure |

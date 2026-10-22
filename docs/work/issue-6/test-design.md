@@ -144,3 +144,15 @@ AUTH6-21 additionally reconciles all section10 wrappers and rejects runtime
 execution of internal bootstrap/capacity/cleanup helpers, unknown overloads and
 any general-purpose identity setter. Return-shape tests seed secret canaries in
 control rows and assert only listed fields for each wrapper.
+
+AUTH6-27 / start UUID and AEAD ordering: trusted application code generates T's
+UUID before encrypting its verifier, passes both UUID and ciphertext to
+start_web_login, and receives that exact stored UUID. Claim returns T and its
+ciphertext; decryption under T/client associated data succeeds, while another
+UUID fails authentication before token exchange. HTTP/form transaction UUID
+injection is rejected. Duplicate UUID creation fails without overwriting or
+substituting the existing row or ciphertext. Retrying with a newly generated
+UUID requires fresh encryption/nonce; reusing old ciphertext under the new UUID
+fails the AUTH6-24 oracle. Check the function inventory needs neither a UUID
+reservation nor a ciphertext-update operation and still denies direct table
+access. Execute through identity public port, production HTTP and real-role DB.

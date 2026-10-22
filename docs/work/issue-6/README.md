@@ -105,7 +105,7 @@ comment, issue closure or production deployment has been performed.
 - Reviews resolved browser-binding races, issuance atomicity, signed binder
   expiry, callback pre-validation authority boundaries, encrypted-verifier
   tampering, cleanup semantics and per-scope rate-limit oracles.
-- AUTH6-01–26 are designed cases with real browser/public-port/PostgreSQL
+- AUTH6-01–27 are designed cases with real browser/public-port/PostgreSQL
   evidence requirements; none is reported executed.
 - Documentation links/field inventories and whitespace checks were validated.
   All application logic/dependencies/runtime services remain unchanged.
@@ -118,3 +118,14 @@ a product/architecture decision; it does not substitute for independent security
 judgment or accept any security risk. Reconciliation was checked against the
 reviewed contract and inventories. GitHub closure/merge are not performed by
 this local design-complete status.
+
+## GitHub PR #23 review follow-up
+
+The [transaction UUID / verifier-encryption comment](https://github.com/maximpaliy/you_story/pull/23#discussion_r4353817634)
+identified an ordering conflict in start_web_login. Trusted application code now
+generates the transaction UUID before encryption and supplies that same UUID to
+the fixed owner function. HTTP callers cannot select it; duplicate UUIDs cannot
+overwrite an existing row. AUTH6-27 covers round-trip decryption, wrong-ID
+substitution, duplicate rejection and fresh encryption on a new-ID retry.
+This corrects the implementability of the accepted AEAD boundary without adding
+new database access, ciphertext update/reservation APIs or product behavior.
