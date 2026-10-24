@@ -17,7 +17,6 @@ from you_story.migrations.manifest import expected_revisions
 from you_story.shared.config import Settings
 from you_story.shared.context import ActorContext, correlation_id
 
-SCHEMA_HEAD = "004_media"
 _log = logging.getLogger("you_story.context")
 
 
@@ -123,8 +122,15 @@ class Database:
                         "current_database(), 'CREATE,TEMP') "
                         "AND NOT pg_catalog.has_schema_privilege(current_user, 'public', 'CREATE') "
                         "AND NOT pg_catalog.has_schema_privilege(current_user, 'media', 'USAGE') "
-                        "AND NOT pg_catalog.has_table_privilege(current_user, "
-                        "'identity.login_session', 'SELECT,INSERT,UPDATE,DELETE')"
+                        "AND NOT EXISTS (SELECT 1 FROM (VALUES "
+                        "('identity.user'),('identity.tenant'),('identity.external_identity'),"
+                        "('identity.invitation'),('identity.login_session'),"
+                        "('identity.login_transaction'),('identity.auth_rate_limit')) "
+                        "AS control_plane(name) WHERE "
+                        "pg_catalog.has_table_privilege(current_user, control_plane.name, "
+                        "'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER') OR "
+                        "pg_catalog.has_any_column_privilege(current_user, control_plane.name, "
+                        "'SELECT,INSERT,UPDATE,REFERENCES'))"
                     )
                 ).scalar_one()
                 if privileges is not True:
