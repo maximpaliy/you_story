@@ -242,3 +242,11 @@ that database foundation. Global SEC-01 provisioning integration and SEC-05/06/0
 feature evidence remain open. This review ran no runtime tests and does not
 complete #10, close those findings, authorize production/real-user data, accept
 security risk or claim the prior 217-test foundation run as new verification.
+
+## Subsequent owner clarification (recorded by implementation lead)
+
+After the review above, the owner chose to retain the opaque user_id and keep
+tenant_id internal. The candidate now returns exactly user_id and
+provisioning_state. Earlier references to a tenant UUID or a three-field public
+profile describe the previous proposal. This records the owner clarification,
+not a new independent review or approval of the broader HTTP contract.

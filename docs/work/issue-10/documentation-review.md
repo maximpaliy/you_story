@@ -72,3 +72,11 @@ required. Unchanged reuse of merged SQL needs no new DDL approval; any discovere
 database defect requires a separately reviewed additive fix. Issue #10 and
 cumulative applicable SEC feature findings remain open; #9 is closed. No
 production deployment, real-user-data use or security-risk acceptance is implied.
+
+## Subsequent owner clarification (recorded by implementation lead)
+
+After the review above, the owner chose to retain the opaque user_id and keep
+tenant_id internal. The candidate now returns exactly user_id and
+provisioning_state. Earlier references to a tenant UUID or a three-field public
+profile describe the previous proposal. This records the owner clarification,
+not a new independent review or approval of the broader HTTP contract.

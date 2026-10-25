@@ -53,3 +53,11 @@ this record.
    canary scans, fault/race cases and cumulative checks without hidden skips.
 5. Independent implementation security/code review of actual evidence before
    completion. SEC-01/05/06/07 remain open for their applicable runtime scopes.
+
+## Owner clarification verification
+
+The narrowed OwnProfile schema requires exactly user_id and provisioning_state,
+forbids additional fields and excludes tenant_id. The retained UUID is not a
+credential and cannot select request authority. Internal actor/session tenant
+linkage is unchanged. JSON/reference and whitespace checks passed for this
+documentation-only update; no runtime tests ran.

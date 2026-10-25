@@ -96,3 +96,11 @@ fixture clocks when executing the full integration/browser suites.
 No implementation code/security review or cumulative SEC-01/05/06/07 closure
 follows from this document. This passes the feature test design only; #10 remains
 unimplemented and open, while #9's database foundation is already merged/closed.
+
+## Subsequent owner clarification (recorded by implementation lead)
+
+After the review above, the owner chose to retain the opaque user_id and keep
+tenant_id internal. The candidate now returns exactly user_id and
+provisioning_state. Earlier references to a tenant UUID or a three-field public
+profile describe the previous proposal. This records the owner clarification,
+not a new independent review or approval of the broader HTTP contract.

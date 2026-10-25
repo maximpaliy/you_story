@@ -82,10 +82,6 @@
             ],
             "type": "string"
           },
-          "tenant_id": {
-            "format": "uuid",
-            "type": "string"
-          },
           "user_id": {
             "format": "uuid",
             "type": "string"
@@ -93,7 +89,6 @@
         },
         "required": [
           "user_id",
-          "tenant_id",
           "provisioning_state"
         ],
         "type": "object"

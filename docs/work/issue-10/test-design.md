@@ -123,7 +123,9 @@ Apply WEB-01–05 to every introduced surface: `GET /login`,
 `GET /api/v1/profile`, and `POST /logout`, plus existing health and unknown/error
 routes under the outer response policy. This path set is the proposed API under
 review; its acceptance belongs to the lead's concrete API contract. No additional
-JSON mutation route is inferred. JSON profile cannot expose CSRF/session/token,
+JSON mutation route is inferred. JSON profile contains exactly user_id and provisioning_state. Assert tenant_id
+is absent even for valid authentication; it remains internal. The retained user_id
+is never an authority selector. JSON profile cannot expose CSRF/session/token,
 provider subject/issuer, email, invitation, binder, or internal control details.
 Health routes remain anonymous and must not touch an ambient session.
 

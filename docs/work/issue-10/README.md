@@ -25,7 +25,7 @@ The initially provided checkout was stale and was updated before final review.
 #10 adds provider/crypto/browser/public-port integration, trusted actor issuance
 and login-only catalog-pair provisioning; it does not redesign the database
 foundation or make #9 depend on this later integration. Proposed profile data is only
-the resolved user's UUID, personal tenant UUID and catalog readiness; logout is
+the resolved user's UUID and catalog readiness; tenant identity stays internal. Logout is
 a CSRF-protected form POST. No profile-name persistence is introduced.
 
 ## Owner decision

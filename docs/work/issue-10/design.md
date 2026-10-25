@@ -107,7 +107,8 @@ The seven control-plane tables and all wrapper signatures already exist:
 
 Maintain the safe existing `search_path=pg_catalog,identity`, owner-only helpers,
 exact runtime EXECUTE grants and zero direct table/sequence access. Own-profile
-uses the existing resolver tuple; no profile SELECT function/grant or new fields.
+projects only user_id and provisioning_state from the existing resolver tuple;
+tenant_id remains internal. No profile SELECT function/grant or new fields.
 No profile-name column/storage retention decision is introduced.
 
 Admission metadata already uses nullable `admission_kind` (bearer/allowlist) and

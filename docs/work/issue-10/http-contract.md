@@ -34,12 +34,14 @@ Exact JSON schema (additional properties forbidden):
 ```json
 {
   "user_id": "internal UUID of the authenticated user",
-  "tenant_id": "internal UUID of that user's personal tenant",
   "provisioning_state": "catalog_pending or ready"
 }
 ```
 
-These identifiers come solely from a successful production session resolver.
+The user identifier comes solely from a successful production session resolver.
+It is an opaque stable identifier, not a credential or an authorization input.
+Tenant identity stays internal to the validated actor/session context and is
+never returned in this profile response.
 Do not return session UUID, issuer/subject, names/email, token/digest, provider
 payload, catalog IDs or private preferences. No field can override authority.
 Unknown query parameters, including user_id/tenant_id/actor/session, are rejected;
@@ -103,3 +105,10 @@ Approve the route inventory, read-only profile fields, form-only logout, fixed
 destination behavior and response/error choices above. The previously approved
 Google lifecycle, cookie, CSRF and SQL-isolation decisions are not being reopened.
 This approval grants no deployment permission or security-risk acceptance.
+
+## Owner clarification
+
+The owner chose to retain user_id for debugging and keep tenant_id internal.
+This narrows the proposed response to user_id and provisioning_state; it does
+not grant permission to select a user/tenant through request input. The broader
+HTTP contract remains pending owner approval.
