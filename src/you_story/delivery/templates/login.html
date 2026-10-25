@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Sign in — You Story</title></head>
+<body><main>
+<h1>Sign in to You Story</h1>
+<p>Use an invited Google account.</p>
+<form method="post" action="/auth/google/start">
+<input type="hidden" name="proof" value="{{ proof }}">
+<input type="hidden" name="destination" value="home">
+<label for="invitation">Invitation token (optional)</label>
+<input id="invitation" name="invitation" type="text" autocomplete="off" maxlength="43" spellcheck="false">
+<button type="submit">Continue with Google</button>
+</form>
+</main></body></html>

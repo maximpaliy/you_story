@@ -15,6 +15,7 @@ from sqlalchemy.engine import URL, Connection
 from sqlalchemy.exc import DBAPIError
 
 from tests.db_support import initialize
+from tests.test_auth_crypto import settings as auth_fixture
 from you_story.app import create_app
 from you_story.shared import database as database_module
 from you_story.shared.config import Settings
@@ -56,7 +57,7 @@ def db(database_settings: tuple[Settings, str, str]):
 
 def test_ready_real_and_health(database_settings: tuple[Settings, str, str], db: Database) -> None:
     assert db.ready()
-    with TestClient(create_app(database_settings[0])) as client:
+    with TestClient(create_app(database_settings[0], auth_settings=auth_fixture())) as client:
         assert client.get("/live").status_code == 200
         assert client.get("/ready").status_code == 200
 

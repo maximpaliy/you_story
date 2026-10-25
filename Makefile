@@ -1,6 +1,6 @@
 export UV_CACHE_DIR := $(CURDIR)/work/uv-cache
 
-.PHONY: sync check unit format openapi
+.PHONY: sync check unit browser format openapi
 
 sync:
 	UV_CACHE_DIR=work/uv-cache uv sync --frozen
@@ -17,6 +17,9 @@ check:
 
 unit:
 	uv run --frozen python -m pytest -m 'not postgres'
+
+browser:
+	uv run --frozen python -m pytest -m browser --junitxml=work/browser-results.xml
 
 format:
 	uv run --frozen ruff check --fix .

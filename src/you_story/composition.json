@@ -1,7 +1,12 @@
 {
   "http": "you_story.app:create_app",
   "migration": "you_story.migrations",
-  "private_statements": [],
+  "private_statements": [
+    "catalog/infrastructure/provisioning.py:_ensure_pair:catalog_insert",
+    "catalog/infrastructure/provisioning.py:_ensure_pair:catalog_select",
+    "catalog/infrastructure/provisioning.py:_ensure_pair:grant_insert",
+    "catalog/infrastructure/provisioning.py:_ensure_pair:grant_select"
+  ],
   "workers": [],
   "media_adapters": []
 }

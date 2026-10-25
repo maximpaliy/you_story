@@ -17,11 +17,13 @@ def test_health_and_correlation() -> None:
         assert client.get("/live").headers["X-Correlation-ID"] != live.headers["X-Correlation-ID"]
 
 
-def test_safe_error_envelopes_and_no_product_routes() -> None:
+def test_safe_error_envelopes_and_deferred_routes_absent() -> None:
     with TestClient(create_app(readiness=lambda: False)) as client:
         cases = [
             ("GET", "/ready", 503, "not_ready"),
-            ("GET", "/login", 404, "not_found"),
+            ("GET", "/login", 503, "unavailable"),
+            ("GET", "/media", 404, "not_found"),
+            ("GET", "/api/v1/sessions", 404, "not_found"),
             ("POST", "/live", 405, "method_not_allowed"),
             ("GET", "/openapi.json", 404, "not_found"),
             ("GET", "/docs", 404, "not_found"),
@@ -50,7 +52,10 @@ def test_unexpected_exception_is_sanitized() -> None:
         assert response.json()["error"]["correlation_id"] == response.headers["X-Correlation-ID"]
 
 
-def test_openapi_health_only() -> None:
+def test_openapi_approved_login_slice_only() -> None:
     schema = create_app(readiness=lambda: True).openapi()
-    assert set(schema["paths"]) == {"/live", "/ready"}
-    assert all(set(operation) == {"get"} for operation in schema["paths"].values())
+    from tools.export_openapi import EXPECTED_ROUTES
+
+    assert set(schema["paths"]) == {path for path, _ in EXPECTED_ROUTES}
+    for path, methods in EXPECTED_ROUTES:
+        assert set(schema["paths"][path]) == {next(iter(methods)).lower()}

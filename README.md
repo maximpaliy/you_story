@@ -1,13 +1,15 @@
 # You Story
 
-A Python/FastAPI modular monolith for the approved personal catalog and practice
-application. The current executable increment exposes health checks only.
-The database foundation implements ADR-011's seven-table authentication control
-plane and reviewed login/session database functions, with additive upgrades from
-the original foundation. Issue #9's follow-up is ready for owner review. Authentication exposure and complete
-SEC-05 implementation evidence remain in Issue #10.
-No login, catalog/practice operation, sharing, media, deletion or offline feature
-is available. See [Issue #9 evidence](docs/work/issue-9/README.md).
+A Python/FastAPI modular monolith with allowlisted Google sign-in, opaque
+PostgreSQL sessions, minimal authenticated home/profile, logout, and login-only
+empty personal catalog provisioning. The HTTP contract exposes only user_id
+and provisioning_state in profile JSON; tenant identity remains internal.
+
+The merged Issue #9 database foundation is reused unchanged. Issue #10 supplies
+provider/crypto/browser integration; its [evidence](docs/work/issue-10/README.md)
+records independent reviews and test limits. Catalog editing/practice, sharing,
+media, deletion and offline features remain unavailable. No production deployment
+or real-user-data approval is implied by the local implementation.
 
 ## Local development and verification
 
@@ -18,6 +20,8 @@ credentials or the fixture bootstrap in a shared/deployed environment.
 ```sh
 docker compose up -d --wait db
 make sync
+export PLAYWRIGHT_BROWSERS_PATH="$PWD/work/browsers"
+uv run --frozen python -m playwright install --with-deps chromium
 export TEST_ADMIN_URL=postgresql://postgres:local-fixture-only@127.0.0.1:55439/you_story_issue9_test
 export TEST_DATABASE_CONFIRM=disposable
 make check
@@ -34,22 +38,22 @@ bootstrap-to-head, populated foundation-to-head, every real revision's
 transactional failure/retry, and ledger/checksum mismatch.
 
 After the checks, run migrations as the separate owner process, then start HTTP
-with only the runtime credential:
+with the runtime database credential and the auth settings described below:
 
 ```sh
 MIGRATION_DATABASE_URL=postgresql://app_owner:owner-fixture@127.0.0.1:55439/you_story_issue9_test \
   uv run --frozen python -m you_story.migrations
 YOU_STORY_DATABASE_URL=postgresql+psycopg://app_runtime:runtime-fixture@127.0.0.1:55439/you_story_issue9_test \
-  uv run --frozen uvicorn you_story.app:create_app --factory --host 127.0.0.1 --port 8000
+  uv run --frozen uvicorn you_story.app:create_app --factory --host 127.0.0.1 --port 8000 --no-access-log --no-proxy-headers
 ```
 
 `GET /live` checks the process; `GET /ready` checks bounded database access,
 actual runtime identity/privileges and the exact migration ledger. Errors use a
-safe envelope and server-generated `X-Correlation-ID`. Interactive API docs and
-product routes are absent. The reviewed generated contract is
-[docs/api/openapi.json](docs/api/openapi.json); `make openapi` regenerates it for
-review. Runtime configuration has no owner-credential field and startup performs
-no migration. Keep owner/runtime credentials in separate processes.
+safe envelope and server-generated `X-Correlation-ID`. Interactive API docs are
+disabled; the approved auth/profile routes are registered. The generated contract
+is [docs/api/openapi.json](docs/api/openapi.json); `make openapi` regenerates it
+for review. Runtime configuration has no owner-credential field and startup
+performs no migration. Keep owner/runtime credentials in separate processes.
 
 Migrations live under each owning module; the controlled runner alone can apply
 packaged, reviewed schema revisions. A failure rolls back its current revision;
@@ -165,3 +169,26 @@ Do not initially trigger agents automatically from issue creation. Validate the 
 This repository deliberately does not guess a version-specific `.codex/config.toml`. Current OpenAI agent runtimes support explicit multi-agent orchestration and reusable skills, but the exact configuration surface depends on the runtime you use. Keep runtime-specific settings outside the project rules unless you have verified them against the current documentation.
 
 The repository can therefore serve as the durable project/workflow layer while the Codex app, CLI, SDK, or another compatible harness supplies execution.
+
+## Approved Google web authentication configuration
+
+The HTTP contract for #10 was approved on 2026-10-26. The runtime requires
+`YOU_STORY_AUTH_ORIGIN` (the canonical external HTTPS origin),
+`YOU_STORY_AUTH_CLIENT_ID`, `YOU_STORY_AUTH_CLIENT_SECRET`, and separately
+generated `YOU_STORY_AUTH_PREAUTH_KEY`, `YOU_STORY_AUTH_VERIFIER_KEY` and
+`YOU_STORY_AUTH_IP_KEY`. Each key is canonical unpadded base64url of 32 random
+bytes and must be distinct. Inject secrets securely; no values or production
+defaults are committed. The exact registered Google redirect URI is the origin
+plus `/auth/google/callback`. Scopes are only `openid profile`.
+
+Keep Uvicorn access logs disabled and proxy headers disabled with the command
+above: default access records contain callback secrets, and untrusted forwarding
+headers must not choose rate-limit IP keys. The app also suppresses Uvicorn
+access records as defense in depth. An eventual trusted-proxy deployment must
+provide its own reviewed client-address handling and query-free logging; no
+production proxy configuration is introduced here.
+
+The profile JSON contains only `user_id` and `provisioning_state`; tenant IDs
+stay inside validated server context. Run `make browser` against the guarded
+disposable database to verify the real HTTPS browser journeys. The browser
+runner is pinned in the lockfile; evidence records the exact Chromium version.

@@ -170,3 +170,13 @@ security and test-design reviews. See [ADR-011](011-web-login-transaction-and-se
 and the [Issue #6 contract](../../work/issue-6/auth-session-contract.md) for exact
 callback, token and browser-binding rules. CSP nonces remain independent fresh
 CSPRNG values. No security risk is accepted; implementation evidence is pending.
+
+## ADR-012 native-form compatibility amendment
+
+On 2026-10-26 the owner approved the independently reviewed
+[ADR-012](012-native-login-browser-policy-compatibility.md) after real Chromium
+showed the original native-form flow was blocked. Only successful GET 200 HTML
+for `/login`, `/` and `/profile` uses Referrer-Policy: same-origin. Only that
+`/login` class adds the fixed Google authorize source to form-action. All other
+response policies and request-provenance/CSRF checks remain as specified above.
+The ADR records the exact exception and CSP redirect path-matching limitations.
