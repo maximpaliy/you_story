@@ -1,6 +1,6 @@
 project: music-practice-tracker
-stage: foundation-implementation
-status: issue-9-authentication-database-ready-for-review
+stage: first-authenticated-slice
+status: issue-10-verified-ready-for-review
 human_approval:
   architecture: partial
   first_increment_architecture: approved
@@ -26,3 +26,5 @@ notes:
   - Issue #6 started on 2026-10-03; the owner approved `__Host-you_story_session`, `Path=/`, no `Domain`, and persistent `Max-Age=2592000`, while the remaining SEC-05 design and reviews remain pending.
   - Issue #6 design completed on 2026-10-22 after owner approval of independently reviewed ADR-011; ADR-008/009 are reconciled. SEC-05 remains open for MVP-07 runtime evidence and independent security/code review.
   - "PR #24 merged the health-only foundation. The owner requested Issue #9 alignment with approved ADR-011 on 2026-10-23; the additive database delta passes 217 tests and independent reviews and is ready for owner review, with no authentication HTTP routes or production deployment. Earlier Issue #9 notes treating Issue #6 as pending are superseded. Complete runtime/catalog/browser evidence remains with the implementing slices."
+
+  - "2026-10-26: Issue #10 implements Google/browser sessions, profile/logout and login-only catalog provisioning on merged #9. Owner approved HTTP contract and scoped ADR-012 native-form policy adjustment; final verification and review evidence live under docs/work/issue-10. No production deployment authorized."

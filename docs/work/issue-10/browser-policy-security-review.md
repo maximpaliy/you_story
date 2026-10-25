@@ -5,8 +5,14 @@
 - Date: 2026-10-26
 - Material: proposed ADR-012, accepted ADR-009/011, current form templates and
   delivery response/provenance controls, approved Issue #10 HTTP contract
-- Verdict: **proposal design pass; inactive pending owner approval and exact
-  browser/implementation evidence**. No production or security-risk acceptance.
+- Verdict: **approved policy implementation and native-browser evidence pass**.
+  Owner explicitly approved the scoped
+  ADR-012 adjustment on 2026-10-26 before activation. The initial proposal-only
+  restrictions below are historical prerequisites, now satisfied for owner
+  approval and inspected policy code. No production or risk acceptance.
+- Current frozen final evidence: **638 passed, zero errors/failures/skips, nine
+  real HTTPS browser cases**. The 580/582-case results below are historical and
+  superseded by the frozen final evidence addendum.
 
 ## Assessment
 
@@ -67,3 +73,78 @@ proposal. It does not establish browser compatibility before the diagnostic and
 final native-form runs, approve a policy implementation not yet inspected,
 complete issue #10 or authorize real users/deployment. The separate implementation
 review still tracks actor/session integrity, logging and full runtime evidence.
+
+## Owner decision and activated policy re-review
+
+The owner explicitly approved the exact scoped ADR-012 adjustment on 2026-10-26.
+This reviewer then inspected the activated `apply_response_policy` and the root
+middleware's method/path wiring independently of their authors.
+
+The exception predicate requires HTML, status exactly 200, method exactly GET,
+and path exactly /login, / or /profile. Only that login-form class appends the
+literal Google HTTPS authorize source. Home/profile remain self-only form-action;
+callback, errors, redirects, JSON, other methods/paths and missing request
+classification retain no-referrer and strict self-only form-action. Nonce,
+no-store, all other fourteen CSP directives and the remaining header matrix
+remain as approved. No null-Origin/provenance bypass or request-selected source
+was introduced. The app supplies method/path from the actual Request, not an
+untrusted header or client field.
+
+Independent focused run of `tests/test_browser_policy.py` and
+`tests/test_auth_logging.py`: **190 passed, one upstream Starlette/httpx warning,
+1.10 seconds**. The 120-case method/path/status/representation matrix independently
+checks all directives, exceptions and unchanged defaults; missing-classification
+and safe-log canary controls also passed.
+
+**Exact policy source/focused evidence verdict: pass.** The final real native
+HTTPS browser outcome and full integration evidence remain a separate completion
+condition. This source/header pass does not claim those pending runs executed,
+authorize production or close issue #10/security findings on its own.
+
+## Final native-browser evidence disposition
+
+The coordinator's final canonical run completed **580 passed, zero failures or
+skips**, including the seven actual HTTPS Chromium journeys. This reviewer
+independently inspected the JUnit summary and browser-test assertions, without
+concurrently rerunning the destructive shared PostgreSQL fixture.
+
+The positive flow keeps native POST/303, actual enforced response policy and
+strict provenance. CDP intercepts only the fixed external Google request after
+CSP checks to supply the synthetic provider response; no test rewrites the
+initial redirect, forges Origin or disables CSP. The resulting signed-token,
+cookie/profile/logout and independent-account journeys passed. Real browser
+negatives observed form-action blocking for attacker targets, an unapproved
+Google path, and Google submission from non-login profile; the response-policy
+matrix also confirms all callback/error/redirect/JSON defaults remain unchanged.
+
+**Final scoped policy security verdict: pass.** The original incompatible policy
+is retained as a failing historical diagnostic, not an ignored failure in the
+final run. Owner approval, exact source review, header matrix and native-browser
+evidence now resolve this compatibility gate. No live Google deployment,
+production proxy configuration, real-user-data permission or risk acceptance is
+implied. See [implementation security review](implementation-security-review.md)
+for the separate identity/catalog/logging findings and final scoped disposition.
+
+## Final evidence addendum — nine browser cases
+
+The coordinator's final full rerun is **582 passed, zero errors/failures/skips,
+75.370 seconds**, including nine actual native HTTPS browser cases. This reviewer
+parsed the updated JUnit and inspected the additional real-app pending-catalog
+fault/retry journeys and strengthened stored-canary assertions. All original
+native form/CSP/provenance positives and negatives remain in that passing run;
+the new cases also exercise pending-profile and native logout before successful
+fresh-login reconciliation. No policy or other production source changed for
+this test/evidence refinement.
+
+This is the current acceptance result; the earlier 580-case/seven-browser record
+is retained only as a historical checkpoint. The scoped policy security pass
+remains unchanged, with the same independent-review and production limitations.
+
+## Frozen final evidence addendum
+
+The current canonical JUnit and successful check/package log were independently
+inspected: **638 passed, zero errors/failures/skips, 76.196 seconds**, retaining
+all nine real HTTPS browser cases. The 56 added issuer-capability static mutations
+do not change the approved policy or browser feature behavior. This supersedes
+the 580/582-case historical aggregate checkpoints. The exact policy/source and
+native-browser security pass, scope and production limitations remain unchanged.

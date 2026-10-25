@@ -19,3 +19,21 @@ def test_unapproved_method_mutation(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(export_openapi, "create_app", lambda **kwargs: app)
     with pytest.raises(AssertionError, match="route/method"):
         export_openapi.contract()
+
+
+def test_registered_route_cannot_be_hidden_from_contract(monkeypatch: pytest.MonkeyPatch) -> None:
+    app = create_app(readiness=lambda: False)
+    route = next(route for route in app.routes if route.path == "/logout")
+    route.include_in_schema = False
+    monkeypatch.setattr(export_openapi, "create_app", lambda **kwargs: app)
+    with pytest.raises(AssertionError, match="HTTP surface"):
+        export_openapi.contract()
+
+
+def test_authorized_surface_has_only_exact_methods() -> None:
+    import json
+
+    schema = json.loads(export_openapi.contract())
+    assert set(schema["paths"]) == {path for path, _ in export_openapi.EXPECTED_ROUTES}
+    assert set(schema["paths"]["/auth/google/callback"]) == {"get"}
+    assert set(schema["paths"]["/logout"]) == {"post"}

@@ -41,3 +41,19 @@ def test_payload_and_composition_mutations(tmp_path: Path) -> None:
     assert "unregistered wheel payload" in errors
     assert "unapproved/missing wheel composition" in errors
     assert "wheel differs from reviewed source inventory/bytes" in errors
+
+
+def test_packaged_template_sink_is_checked_independently(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    template = source / "delivery/templates/profile.html"
+    template.parent.mkdir(parents=True)
+    template.write_text("{{ user_text | safe }}")
+    (source / "composition.json").write_text(json.dumps(EXPECTED_COMPOSITION))
+    wheel = tmp_path / "unsafe-template.whl"
+    with zipfile.ZipFile(wheel, "w") as archive:
+        for file in source.rglob("*"):
+            if file.is_file():
+                archive.writestr(
+                    "you_story/" + file.relative_to(source).as_posix(), file.read_bytes()
+                )
+    assert "unapproved template sink/resource" in check_wheel(wheel, source)

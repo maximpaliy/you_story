@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Your profile — You Story</title></head>
+<body><main>
+<h1>You are signed in</h1>
+{% if provisioning_state == 'catalog_pending' %}<p>Your personal catalog is being prepared. Your profile and sign out remain available.</p>{% else %}<p>Your personal catalog is ready.</p>{% endif %}
+<nav aria-label="Account"><a href="/">Home</a> <a href="/profile">Profile</a></nav>
+<form method="post" action="/logout">
+<input type="hidden" name="csrf" value="{{ csrf }}">
+<button type="submit">Sign out</button>
+</form>
+</main></body></html>

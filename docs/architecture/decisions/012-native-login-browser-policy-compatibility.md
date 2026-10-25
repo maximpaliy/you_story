@@ -1,6 +1,6 @@
 # ADR-012: Native form compatibility for the approved Google login flow
 
-- Status: Proposed; independent review and owner approval pending
+- Status: Accepted by the human owner on 2026-10-26 after independent reviews
 - Date: 2026-10-26
 - Scope: narrowly amend ADR-009 for HTML containing the approved native forms
 
@@ -45,8 +45,9 @@ not be described as enforcing the authorize path on every hop. The application's
 fixed HTTPS Location enforces the exact initial authorize endpoint; the CSP
 exception permits the accounts.google.com origin for applicable redirect checks.
 
-These amend explicit reviewed browser controls, so the proposed change remains
-inactive until architecture/security/test review and owner approval. Neither an
+These amend explicit reviewed browser controls. Architecture/security/test
+reviews passed and the owner explicitly approved the scoped adjustment on
+2026-10-26. Neither an
 HTTP-contract approval nor a passing mocked HTTP test implicitly approves this
 policy delta. There is no accepted security risk or production deployment here.
 

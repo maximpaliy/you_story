@@ -14,22 +14,33 @@ dependencies = [
   "psycopg[binary]==3.3.6",
   "pydantic-settings==2.16.1",
   "pglast==8.7",
+  "cryptography==46.0.3",
+  "pyjwt==2.10.1",
+  "httpx==0.28.1",
+  "jinja2==3.1.6",
+  "anyio==4.15.1",
 ]
 
 [dependency-groups]
-dev = ["pytest==9.1.1", "httpx==0.28.1", "ruff==0.17.2", "mypy==2.4.0"]
+dev = [
+    "pytest==9.1.1",
+    "httpx==0.28.1",
+    "ruff==0.17.2",
+    "mypy==2.4.0",
+    "playwright==1.56.0",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-you_story = ["**/*.sql", "**/*.json"]
+you_story = ["**/*.sql", "**/*.json", "**/*.html"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src", "."]
 addopts = "-ra --strict-markers"
-markers = ["postgres: requires disposable PostgreSQL"]
+markers = ["postgres: requires disposable PostgreSQL", "browser: real HTTPS Chromium journey"]
 
 [tool.ruff]
 line-length = 100

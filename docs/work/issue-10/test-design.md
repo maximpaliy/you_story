@@ -1,6 +1,8 @@
 # Issue #10 implementation test design
 
-Status: independent test-design review passed after remediation; **no new tests have run**.
+Status: independently reviewed test plan. Actual implemented execution and
+case-count limits are recorded in verification.md and test-evidence-review.md;
+this plan is not a claim that every enumerated subcase has run.
 Issue: https://github.com/maximpaliy/you_story/issues/10 (`MVP-07`).
 Oracle: [Issue #6 contract](../issue-6/auth-session-contract.md), its
 [AUTH6-01–27 cases](../issue-6/test-design.md), accepted ADR-007/008/009/011,

@@ -1,8 +1,8 @@
 # Issue #10 — Google sign-in implementation design
 
 Issue: https://github.com/maximpaliy/you_story/issues/10 (`MVP-07`).
-Status: independently reviewed design; concrete HTTP contract awaits owner approval. No production
-implementation, authentication verification or deployment is claimed.
+Status: implemented against the owner-approved HTTP contract and ADR-012.
+See [verification](verification.md) for actual runtime evidence and limits.
 
 ## Requirements and authority
 
@@ -19,13 +19,14 @@ Only the accepted own-profile Q01 and authentication subset of Issue #8 are
 needed; proposed content/practice policies in ADR-010 are not implemented.
 
 AGENTS.md requires independent architecture/security/test-design reviews before
-implementation and owner approval for externally visible API contract changes.
+implementation and owner approval for externally visible API contract changes (obtained on
+2026-10-26 for this contract).
 The backlog explicitly says its approval does not approve an API contract.
 The existing auth lifecycle needs no repeat owner decision. The new profile
 URI, fields and error/status representation are made concrete in
 [http-contract.md](http-contract.md) and [openapi.candidate.json](openapi.candidate.json)
-for that remaining approval. These are proposed artifacts, separate from the
-active health-only `docs/api/openapi.json`.
+as the approved review artifacts. The active generated contract is
+`docs/api/openapi.json`; both contain the same approved endpoint inventory.
 
 ## Slice boundaries and sequence
 
@@ -205,7 +206,8 @@ session derivation code, not provider connectivity.
 Use contextual template autoescaping; no string-built HTML or safe-marked input.
 Hidden proof/CSRF is rendered only in the matching form. All responses pass
 one outer security-header policy, including framework/middleware errors. Enforce
-the exact ADR-009 CSP with independent fresh 32-byte nonce per HTML response;
+the exact ADR-009 CSP as amended by owner-approved ADR-012, with an
+independent fresh 32-byte nonce per HTML response;
 no scripts/styles are required by this slice. Preserve no-store on auth and
 private responses, correct media types, no-referrer, nosniff, frame denial,
 permissions/COOP and production HSTS.

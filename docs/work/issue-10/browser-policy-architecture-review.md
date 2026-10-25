@@ -79,3 +79,15 @@ runner. Full proposed-policy browser evidence, exact implementation review and
 final cumulative checks remain required before Issue #10 completion. Identity
 core correctness is outside this policy-design verdict and needs another
 reviewer's independent implementation disposition.
+
+## Diagnostic evidence update
+
+The coordinator subsequently reports three passing isolated Chromium diagnostic
+cases using test-only response headers, including the real CDP-observed Google
+navigation event. This supersedes the earlier hypothesis-only status for the
+second form-action layer: the bounded proposed headers permit the native flow
+while the original-policy baseline remains blocked. These are attributed
+synthetic diagnostic results, not this reviewer's execution or evidence that
+production policy has changed. The proposal's architecture verdict remains pass;
+owner approval, independent security/test disposition and final unchanged-header
+journey evidence after any approved implementation remain separate gates.

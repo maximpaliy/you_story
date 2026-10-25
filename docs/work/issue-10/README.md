@@ -1,56 +1,70 @@
 # Issue #10 — Allowlisted Google sign-in and session logout
 
 Issue: https://github.com/maximpaliy/you_story/issues/10 (`MVP-07`).
-Date: 2026-10-25.
+Date: 2026-10-26. Status: **implemented and verified; ready for PR review/merge**.
 
-Status: **design reviews passed; concrete HTTP contract awaits owner approval**.
-The application still exposes health checks only. No login implementation or
-runtime authentication tests are claimed; #10 remains open.
+## Result
 
-## Reviewable result
+Invited or subject-allowlisted users can sign in through Google Authorization
+Code + PKCE, receive a linked internal user/personal tenant, use minimal
+home/profile pages and log out. Profile JSON contains only `user_id` and
+`provisioning_state`; tenant identity stays internal. Sessions are opaque,
+digest-only in PostgreSQL, independently revocable and bound to validated actor
+provenance. New account admission and session issuance commit atomically.
 
-- [Implementation design and prerequisite plan](design.md)
-- [Exact proposed HTTP contract and owner decision](http-contract.md)
-- [Candidate OpenAPI](openapi.candidate.json), separate from the active contract
-- [Implementation test design](test-design.md)
-- Independent [architecture](architecture-review.md),
-  [security](security-review.md) and [test-design](test-design-review.md) reviews
-- [Verification and remaining gates](verification.md)
-- [Final documentation review](documentation-review.md)
+Catalog/grant provisioning runs only from a validated login callback, separately
+from identity issuance. A provisioning failure preserves a usable pending
+profile/logout; a later fresh login retries to one complete pair and ready state.
+No content/catalog editing or practice feature is introduced.
 
-The accepted #6 lifecycle and ADR-007/008/009/011 are reused on current main
-`ca99acd`, merged [PR #25](https://github.com/maximpaliy/you_story/pull/25).
-Issue #9 is closed: reuse its implemented database wrappers and verification.
-The initially provided checkout was stale and was updated before final review.
-#10 adds provider/crypto/browser/public-port integration, trusted actor issuance
-and login-only catalog-pair provisioning; it does not redesign the database
-foundation or make #9 depend on this later integration. Proposed profile data is only
-the resolved user's UUID and catalog readiness; tenant identity stays internal. Logout is
-a CSRF-protected form POST. No profile-name persistence is introduced.
+The merged #9 / PR #25 database boundary and all 000–005 migration bytes remain
+unchanged. This slice adds provider/crypto/public-port/browser integration,
+login-only empty catalog provisioning, exact statement/actor/template/wheel
+registries, production configuration and privacy-safe local launch guidance.
 
-## Owner decision
+## Approval and reviews
 
-Approve [the concrete HTTP contract](http-contract.md): `/login`, Google
-start/callback, `/`, `/profile`, read-only `/api/v1/profile`, and form-only
-`POST /logout`, with the listed fields, redirects and error representations.
-The Google lifecycle/cookie policy already has approval; this decision concerns
-the new concrete endpoint/schema choices.
+The owner approved the concrete [HTTP contract](http-contract.md) on 2026-10-26,
+including retained user_id and internal tenant_id. After real Chromium exposed
+the original native-form policy conflict, the owner explicitly approved the
+independently reviewed [ADR-012](../../architecture/decisions/012-native-login-browser-policy-compatibility.md).
+Its form-page exceptions do not relax CSRF, canonical-origin validation or
+caller-independent redirect selection.
 
-The source is the root [AGENTS.md](../../../AGENTS.md), whose human gate says:
-“The human owner approves: ... externally visible API contract changes.”
-The [approved backlog](../proposed-mvp-backlog.md) also states its approval
-“does not approve an API contract.” The accepted Q01 query inventory explicitly
-does not define final HTTP endpoints. No new deployment or risk acceptance is
-requested. Existing 005 SQL is reused unchanged; any discovered SQL defect would
-need a separately reviewed additive fix. Owner API approval does not substitute
-for implementation review or runtime verification.
+- [As-built design](design.md), [approved contract artifact](openapi.candidate.json)
+  and [active generated OpenAPI](../../api/openapi.json)
+- [Reviewed test plan](test-design.md) and [final verification](verification.md)
+- Independent [implementation code review](implementation-code-review.md),
+  [composition/catalog/gate review](composition-code-review.md),
+  [implementation security review](implementation-security-review.md) and
+  [test-evidence review](test-evidence-review.md)
+- [Browser compatibility evidence](browser-compatibility-evidence.md) with
+  scoped [architecture](browser-policy-architecture-review.md),
+  [security](browser-policy-security-review.md) and
+  [test](browser-policy-test-review.md) reviews
+- Initial [architecture](architecture-review.md), [security](security-review.md),
+  [test-design](test-design-review.md) and [documentation](documentation-review.md)
+  reviews remain historical design evidence, superseded by implementation reports
 
-## Completion evidence and limits
+Review authorship is explicit: the provider author did not approve their own
+provider code; the catalog/browser-test author excluded those files from their
+code-review verdict. Separate reviewers covered those boundaries.
 
-Changed only the issue's design/contract/test/review/status documentation.
-Documentation structure, references, JSON and contract consistency were checked;
-see verification for exact checks and limits. Independent design reviews passed
-after remediation; no implementation/security evidence review has happened.
-SEC-01/05/06/07 and #10's integration gates stay open; #9 is closed. Nothing here
-marks proposed ADR-010 feature policies accepted or authorizes production data,
-infrastructure or deployment.
+## Verification and limits
+
+The full canonical command passed: **638 tests, zero failures or skips**, including
+nine HTTPS Chromium journeys, PostgreSQL/RLS/migration/public-port tests,
+188 browser-policy cases, signed synthetic provider cases and independent gate
+mutations. Lint/format, strict types, architecture/SQL provenance, generated
+OpenAPI, wheel build/artifact checks and an installed-wheel smoke passed.
+
+Real Chromium follows the original start 303 to Google's fixed authorize URL;
+CDP fulfills only the synthetic provider response. The backend validates real
+RS256 signatures/JWKS through a controlled transport. Tests do not use live
+Google credentials or claim a live Google/proxy/production deployment. Local
+Chromium's explicit version override and CI's pinned browser setup are recorded
+separately. One existing Starlette TestClient deprecation warning remains.
+
+No production resources, real-user data, deployment, global security-finding
+closure or deferred feature is authorized by this completion record. #10 remains
+open until the PR is reviewed and merged.

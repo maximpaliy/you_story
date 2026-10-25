@@ -21,3 +21,9 @@ class ErrorDetail(BaseModel):
 class ErrorEnvelope(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
     error: ErrorDetail
+
+
+class OwnProfile(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+    user_id: UUID
+    provisioning_state: Literal["catalog_pending", "ready"]

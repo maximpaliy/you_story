@@ -8,7 +8,13 @@ import tempfile
 import zipfile
 from pathlib import Path
 
-from tools.check_architecture import EXPECTED_COMPOSITION, check_file_inventory, check_source
+from tools.check_architecture import (
+    EXPECTED_COMPOSITION,
+    check_file_inventory,
+    check_source,
+    check_sql_registry,
+    check_template,
+)
 
 
 def check_wheel(wheel: Path, source_root: Path | None = None) -> list[str]:
@@ -17,7 +23,7 @@ def check_wheel(wheel: Path, source_root: Path | None = None) -> list[str]:
     expected = {
         "you_story/" + file.relative_to(source_root).as_posix(): file.read_bytes()
         for file in source_root.rglob("*")
-        if file.is_file() and file.suffix in {".py", ".sql", ".json"}
+        if file.is_file() and file.suffix in {".py", ".sql", ".json", ".html"}
     }
     with tempfile.TemporaryDirectory() as temp, zipfile.ZipFile(wheel) as archive:
         target = Path(temp)
@@ -48,6 +54,13 @@ def check_wheel(wheel: Path, source_root: Path | None = None) -> list[str]:
             relative = Path(*file.parts[file.parts.index("you_story") + 1 :]).as_posix()
             errors.extend(check_source(relative, file.read_text()))
             errors.extend(check_file_inventory(relative, file.read_text()))
+        for file in (target / "you_story").rglob("*.html"):
+            relative = file.relative_to(target / "you_story").as_posix()
+            errors.extend(check_template(relative, file.read_text()))
+        # Test-only minimal wheel controls may omit the registry. A real wheel
+        # must match all source bytes and carries the production registry.
+        if (target / "you_story/technical-sql.json").exists():
+            errors.extend(check_sql_registry(target / "you_story"))
         for entries in target.rglob("entry_points.txt"):
             parser = configparser.ConfigParser()
             parser.read(entries)
@@ -60,7 +73,7 @@ def check_wheel(wheel: Path, source_root: Path | None = None) -> list[str]:
             if (
                 file.is_file()
                 and "you_story" in file.parts
-                and file.suffix not in {".py", ".sql", ".json"}
+                and file.suffix not in {".py", ".sql", ".json", ".html"}
             ):
                 errors.append("unregistered wheel payload")
             if ".data" in file.as_posix() and file.is_file():

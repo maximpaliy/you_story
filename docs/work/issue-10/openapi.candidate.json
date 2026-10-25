@@ -133,7 +133,7 @@
     }
   },
   "info": {
-    "description": "Design artifact awaiting owner approval; these routes are not implemented.",
+    "description": "Owner-approved MVP-07 HTTP contract; implementation and runtime verification in progress.",
     "title": "You Story MVP-07 proposed contract",
     "version": "0.1.0-candidate"
   },
@@ -1508,5 +1508,5 @@
       }
     }
   },
-  "x-status": "proposed-owner-approval-pending"
+  "x-status": "owner-approved-2026-10-26"
 }

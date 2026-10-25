@@ -1,6 +1,6 @@
 # Proposed HTTP contract — Issue #10
 
-Status: proposed; owner approval required by AGENTS.md before route registration.
+Status: approved by the human owner on 2026-10-26 in this conversation.
 Existing `/live` and `/ready` remain as currently generated. The accompanying
 [OpenAPI candidate](openapi.candidate.json) is a design artifact, not an exposed API.
 
@@ -99,10 +99,10 @@ nonce CSP for HTML. No CORS credentials or permissive origins. Content-type is
 text/html; charset=utf-8 for HTML and application/json for JSON. Normal form
 submissions accept only form-urlencoded with no parameter or one UTF-8 charset.
 
-## Owner decision requested
+## Owner decision (approved on 2026-10-26)
 
-Approve the route inventory, read-only profile fields, form-only logout, fixed
-destination behavior and response/error choices above. The previously approved
+The owner approved the route inventory, read-only profile fields, form-only
+logout, fixed destination behavior and response/error choices above. The previously approved
 Google lifecycle, cookie, CSRF and SQL-isolation decisions are not being reopened.
 This approval grants no deployment permission or security-risk acceptance.
 
@@ -110,5 +110,18 @@ This approval grants no deployment permission or security-risk acceptance.
 
 The owner chose to retain user_id for debugging and keep tenant_id internal.
 This narrows the proposed response to user_id and provisioning_state; it does
-not grant permission to select a user/tenant through request input. The broader
-HTTP contract remains pending owner approval.
+not grant permission to select a user/tenant through request input. The broader HTTP contract was subsequently approved by the owner on 2026-10-26.
+
+## Contract approval
+
+On 2026-10-26 the owner stated: "Approved HTTP contract". Approval covers this
+contract after the user_id/tenant_id clarification. Implementation may proceed
+under the existing design/test/security gates. No deployment or risk acceptance
+is implied. No further API approval is needed for this unchanged contract.
+
+## Approved browser compatibility amendment
+
+The owner approved ADR-012 on 2026-10-26 after independent architecture, security
+and test reviews and actual Chromium diagnostics. Its exact successful-form-page
+header exceptions amend the ADR-009 references above. No route, response schema,
+CSRF/provenance check or caller-selected redirect changes.
