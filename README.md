@@ -192,3 +192,25 @@ The profile JSON contains only `user_id` and `provisioning_state`; tenant IDs
 stay inside validated server context. Run `make browser` against the guarded
 disposable database to verify the real HTTPS browser journeys. The browser
 runner is pinned in the lockfile; evidence records the exact Chromium version.
+
+## Personal Yousician catalog
+
+Issue #11 adds the personal guitar/piano catalog at `/catalog` and JSON routes
+under `/api/v1/catalog`. Songs contain versions (required level 0–15), which
+contain fragments (optional measured length and initially zero note count).
+General search matches names or the containing song author; the author filter
+combines with source/instrument/type/ancestor filters. There is no sharing or import.
+
+Inject `YOU_STORY_CATALOG_CURSOR_KEY` as a separate canonical unpadded base64url
+encoding of 32 random bytes, with no checked-in/default key. Startup fails
+closed if absent or invalid. Replacing this key immediately invalidates existing
+15-minute pagination cursors. Treat cursors and catalog search/referrer URLs as
+private: retain disabled Uvicorn access logging and query/referrer suppression
+at any future proxy. No production proxy or deployment is added by this issue.
+
+Catalog writes require the aggregate ETag from GET `/api/v1/catalog` in
+`If-Match: "catalog:<id>:<version>"`; edits/moves/tombstones also require
+`expected_entry_version`. Entry-detail ETags cannot substitute for catalog
+preconditions. Include the session-bound `X-CSRF-Token` from the authenticated
+catalog form and same-origin provenance on JSON writes. Missing/stale versions
+return 428/412; re-read and review changes before resubmitting.

@@ -11,12 +11,17 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, Response
 from starlette.exceptions import HTTPException
 
-from you_story.catalog.public import ensure_personal_catalog
+from you_story.catalog.public import (
+    CatalogSettings,
+    create_catalog_service,
+    ensure_personal_catalog,
+)
 from you_story.delivery.browser import (
     apply_response_policy,
     callback_failure,
     register_browser_routes,
 )
+from you_story.delivery.catalog import catalog_schema_components, register_catalog_routes
 from you_story.delivery.contracts import ErrorEnvelope, Health
 from you_story.identity.public import (
     AuthSettings,
@@ -61,6 +66,7 @@ def create_app(
     readiness: Callable[[], bool] | None = None,
     auth_settings: AuthSettings | None = None,
     auth_service: IdentityService | None = None,
+    catalog_settings: CatalogSettings | None = None,
 ) -> FastAPI:
     logging.getLogger("uvicorn.access").addFilter(_ACCESS_FILTER)
     logging.getLogger("httpx").addFilter(_ACCESS_FILTER)
@@ -175,6 +181,17 @@ def create_app(
         return _error(request, 503, "not_ready", "Service is not ready")
 
     assert auth_service is not None
+    register_catalog_routes(
+        app,
+        create_catalog_service(
+            database,
+            catalog_settings or CatalogSettings(),  # type: ignore[call-arg]
+        )
+        if database is not None
+        else None,
+        auth_service,
+        canonical_origin=origin,
+    )
     register_browser_routes(
         app, auth_service, canonical_origin=origin, production=production, complete_login=provision
     )
@@ -190,6 +207,10 @@ def create_app(
                 "Opaque browser session; request fields cannot select identity or tenant."
             ),
         }
+        schema["components"]["securitySchemes"]["CatalogSession"] = dict(
+            schema["components"]["securitySchemes"]["SessionCookie"]
+        )
+        schema["components"].setdefault("schemas", {}).update(catalog_schema_components())
         return schema
 
     app.openapi = openapi  # type: ignore[method-assign]

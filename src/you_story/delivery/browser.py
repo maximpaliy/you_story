@@ -130,7 +130,17 @@ def apply_response_policy(
         html
         and response.status_code == 200
         and method == "GET"
-        and path in {"/login", "/", "/profile"}
+        and (
+            path in {"/login", "/", "/profile", "/catalog", "/catalog/entries/new"}
+            or (
+                path is not None
+                and re.fullmatch(
+                    r"/catalog/entries/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?:/edit)?",
+                    path,
+                )
+                is not None
+            )
+        )
     )
     response.headers["Cache-Control"] = "no-store"
     response.headers["X-Content-Type-Options"] = "nosniff"

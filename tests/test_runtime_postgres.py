@@ -35,7 +35,7 @@ def synthetic_actor(tenant: UUID | None = None) -> ActorContext:
 
 @pytest.fixture(scope="module")
 def database_settings() -> tuple[Settings, str, str]:
-    admin, owner, runtime = initialize()
+    admin, owner, runtime = initialize("006_catalog")
     values = conninfo_to_dict(runtime)
     url = URL.create(
         "postgresql+psycopg",
@@ -57,7 +57,15 @@ def db(database_settings: tuple[Settings, str, str]):
 
 def test_ready_real_and_health(database_settings: tuple[Settings, str, str], db: Database) -> None:
     assert db.ready()
-    with TestClient(create_app(database_settings[0], auth_settings=auth_fixture())) as client:
+    from you_story.catalog.public import CatalogSettings
+
+    with TestClient(
+        create_app(
+            database_settings[0],
+            auth_settings=auth_fixture(),
+            catalog_settings=CatalogSettings(cursor_key="Q" * 42 + "A"),
+        )
+    ) as client:
         assert client.get("/live").status_code == 200
         assert client.get("/ready").status_code == 200
 

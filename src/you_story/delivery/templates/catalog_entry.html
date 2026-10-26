@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>{{ entry.name }}</title></head>
+<body><header><a href="/catalog">Catalog</a></header><main>
+<nav aria-label="Breadcrumbs"><ol>{% for ancestor in ancestors %}<li><a href="/catalog/entries/{{ ancestor.id }}">{{ ancestor.name }}</a></li>{% endfor %}<li aria-current="page">{{ entry.name }}</li></ol></nav>
+<h1>{{ entry.name }}</h1><p>{{ entry.type }} — {{ entry.state }}</p>
+{% if entry.type == 'song' %}<p>Author: {{ entry.metadata.author or 'Not specified' }}</p>{% elif entry.type == 'version' %}<p>Level: {{ entry.metadata.level }}</p>{% else %}<p>Measured length: {{ entry.metadata.length_seconds if entry.metadata.length_seconds is not none else 'Unknown' }}</p><p>Musical note count: {{ entry.metadata.notes_count }} (zero may mean not yet observed)</p>{% endif %}
+{% if children %}<h2>Children</h2><ul>{% for child in children %}<li><a href="/catalog/entries/{{ child.id }}">{{ child.name }}</a></li>{% endfor %}</ul>{% if more_children %}<p>Showing the first 100 children.</p>{% endif %}<p><a href="/catalog?ancestor_id={{ entry.id }}">Browse all descendants (paginated)</a></p>{% endif %}
+{% if entry.state == 'active' %}<p><a href="/catalog/entries/{{ entry.id }}/edit">Edit details</a></p>
+{% if entry.type != 'fragment' %}<p><a href="/catalog/entries/new?parent_entry_id={{ entry.id }}">Add {{ 'version' if entry.type == 'song' else 'fragment' }}</a></p>{% endif %}
+{% if entry.type != 'song' %}<h2>Move {{ entry.type }}</h2><form action="/catalog/entries/{{ entry.id }}/move" method="post"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="expected_catalog_version" value="{{ catalog.version }}"><input type="hidden" name="expected_entry_version" value="{{ entry.version }}"><label>New parent entry ID <input name="new_parent_entry_id" required></label><button type="submit">Move entry</button></form>{% endif %}
+{% if not children %}<h2>Remove from active catalog</h2><p>This keeps the entry available for historical navigation.</p><form action="/catalog/entries/{{ entry.id }}/tombstone" method="post"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="expected_catalog_version" value="{{ catalog.version }}"><input type="hidden" name="expected_entry_version" value="{{ entry.version }}"><button type="submit">Tombstone entry</button></form>{% endif %}
+{% endif %}</main></body></html>
