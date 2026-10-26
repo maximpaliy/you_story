@@ -114,3 +114,18 @@ No sharing, import, practice/characteristic workflow or Songsterr user feature
 is exposed. Independent implementation code/security reviews assessed the final source and
 actual evidence and passed after remediation. Their scoped verdicts retain the
 pinned-browser CI requirement before merge/release.
+
+## First pinned-engine CI run and test-only correction
+
+[CI run 40250098469](https://github.com/maximpaliy/you_story/actions/runs/40250098469)
+on code commit `6f18811` installed Chromium **141.0.7390.37** successfully and
+ran the full suite: 735 passed, one failed. The sole failure was the external
+referrer test's observation count: document navigation correctly sent no Referer,
+then the synthetic external page made a favicon request with that external page
+as Referer. This did not contain the private catalog query, but the test counted
+it as a second navigation. The correction scopes the strict `[None]` assertion
+to the exact external Document navigation and additionally checks every
+intercepted resource's header values for private-query leakage. No production
+behavior, header or security control changed. Independent security and code
+review deltas record the test-oracle review. Local focused corrected test:
+1 passed in 3.39 seconds; full pinned CI repeat remains required before merge.

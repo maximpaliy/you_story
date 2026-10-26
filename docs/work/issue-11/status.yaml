@@ -1,7 +1,7 @@
 issue: 11
 backlog_id: MVP-08
 status: ready_for_review
-phase: local_implementation_verified_ci_pinned_browser_pending
+phase: ci_pinned_browser_test_oracle_corrected_repeat_pending
 requirements_source: https://github.com/maximpaliy/you_story/issues/11
 baseline: 4c6ac30
 requirements_review: approved_backlog_and_scoped_catalog_contract

@@ -168,3 +168,27 @@ The previously interrupted reviewer TestClient run remains honestly recorded
 above and is superseded for feature evidence by the complete canonical run,
 not retroactively relabelled as a reviewer pass. Source security assessment and
 independent evidence examination now support this scoped final verdict.
+
+## Pinned-browser CI oracle correction — independent delta review
+
+Reviewed the test-only diff after root reported CI run `40250098469` on `6f`
+with 735 passes and one failure. Reported observation: actual catalog-to-external
+Document navigation had no Referer, while Chromium 141 additionally requested
+the synthetic external site's favicon with the external site's own URL as
+Referer. Reviewer inspected the source diff; the CI observation is attributed
+to root, not falsely claimed as a reviewer-reproduced run.
+
+Verdict: **pass for this test correction**. Limiting the exact `[None]` assertion
+to CDP `Document` requests tests the intended catalog document navigation and
+still requires exactly one observed navigation to the fixed external URL.
+Every intercepted external request continues through a separate collected-header
+assertion forbidding the private catalog-query canary anywhere. No production
+header, route, CSRF/provenance validation or test response from the production
+origin changes. A same-origin external favicon Referer containing only the
+already-public synthetic external URL is not a catalog referrer leak.
+
+This fixes an overbroad resource-type oracle, not a security control bypass or
+risk waiver. The pinned Chromium CI repeat must pass before claiming that
+engine's final verification. The initial failure remains recorded rather than
+being treated as a successful CI run; local targeted execution alone cannot
+substitute for the pending complete pinned-engine repeat.

@@ -324,12 +324,20 @@ def test_catalog_form_policy_is_exact_and_suppresses_cross_origin_referrer(
         page.goto(fixture.origin + "/catalog?text=private-query-referrer-canary-11")
         cdp = context.new_cdp_session(page)
         observed_referrers = []
+        external_header_values = []
 
         def external_request(event):
             # Intercept only the external destination after Chromium has applied
             # the real page's referrer policy. No production response is changed.
             headers = {key.lower(): value for key, value in event["request"]["headers"].items()}
-            observed_referrers.append(headers.get("referer"))
+            external_header_values.extend(headers.values())
+            # Older Chromium may also request the synthetic destination's
+            # favicon with that destination as its Referer. The privacy oracle
+            # concerns the actual navigation away from the catalog document;
+            # every intercepted request still gets the canary-leak check below.
+            if event["resourceType"] == "Document":
+                assert event["request"]["url"] == "https://attacker.invalid/referrer-check"
+                observed_referrers.append(headers.get("referer"))
             cdp.send(
                 "Fetch.fulfillRequest",
                 {
@@ -348,6 +356,9 @@ def test_catalog_form_policy_is_exact_and_suppresses_cross_origin_referrer(
         page.evaluate("window.location.href = 'https://attacker.invalid/referrer-check'")
         page.wait_for_url("https://attacker.invalid/referrer-check")
         assert observed_referrers == [None]
+        assert not any(
+            "private-query-referrer-canary-11" in value for value in external_header_values
+        )
         cdp.send("Fetch.disable")
         cdp.detach()
     finally:

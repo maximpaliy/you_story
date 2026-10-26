@@ -147,3 +147,27 @@ production deployment, capacity/SLO approval, global security-finding closure,
 real Google registration, or unconfigured proxy log verification follows from
 this code-review pass. Final status documentation should reflect these exact
 local passes and remaining CI/deployment boundaries.
+
+## Pinned-browser CI test-oracle delta
+
+Independent review of the subsequent test-only patch: **pass**. Pinned Chromium
+141 CI originally reported 735 passing cases and one failure in the referrer
+harness: after correctly suppressing the catalog document's cross-origin
+Referer, the synthetic external response could trigger a favicon request whose
+Referer was that external destination. The old assertion counted every external
+request as though it were the document navigation.
+
+The revised oracle restricts the exact `[None]` Referer assertion to CDP
+`resourceType == "Document"` and verifies the exact expected external document
+URL. It additionally inspects header values of **all** intercepted external
+requests and rejects the private query canary anywhere. This preserves a
+non-vacuous document-navigation observation while distinguishing unrelated safe
+external favicon traffic; it does not relax production headers, provenance,
+CSRF or catalog referrer behavior. No production code changed.
+
+Root reports the targeted actual local browser case passed after this patch;
+that is Chromium 151 evidence, not a pinned-141 pass. A fresh complete CI run
+must verify the corrected oracle on the pinned engine before merge/release.
+The original failed pinned run remains explicit and is not reclassified as
+passing. The implementation code-review verdict remains pass with this CI
+qualification.
