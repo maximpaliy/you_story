@@ -63,3 +63,12 @@ The owner approved the discussed design direction. New engineering defaults
 (including version/fragment practiceability) remain explicitly distinguishable
 from prior product instructions; final consolidated acceptance remains pending.
 No production implementation or SEC-07 closure is claimed here.
+
+## Scoped catalog acceptance — Issue #11
+
+On 2026-10-26 the owner approved Issue #11's exact MVP catalog contract, including
+author search, C03–C06/Q02–Q06 catalog defaults, version/fragment practiceability,
+immutable definition binding and concurrency policy. See
+[Issue #11 contract](../../work/issue-11/http-contract.md). This is scoped catalog
+acceptance; the remaining practice/characteristic/statistic proposals in this ADR
+retain their existing approval status. No global SEC closure or deployment follows.

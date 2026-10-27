@@ -49,6 +49,7 @@ TECHNICAL_SQL = {"shared/database.py", "migrations/runner.py"}
 REGISTERED_SQL = TECHNICAL_SQL | {
     "identity/infrastructure/postgres.py",
     "catalog/infrastructure/provisioning.py",
+    "catalog/infrastructure/repository.py",
 }
 FEATURE_FILES = {
     "identity/public/__init__.py",
@@ -63,6 +64,12 @@ FEATURE_FILES = {
     "catalog/public/__init__.py",
     "catalog/infrastructure/provisioning.py",
     "delivery/browser.py",
+    "delivery/catalog.py",
+    "catalog/infrastructure/config.py",
+    "catalog/infrastructure/repository.py",
+    "catalog/domain/policy.py",
+    "catalog/application/service.py",
+    "catalog/application/cursors.py",
 }
 ACTOR_ISSUER = "identity/infrastructure/actors.py"
 EVIDENCE_REGISTRY = "identity/public/__init__.py"
@@ -70,6 +77,10 @@ TEMPLATES = {
     "delivery/templates/login.html",
     "delivery/templates/profile.html",
     "delivery/templates/failure.html",
+    "delivery/templates/catalog_index.html",
+    "delivery/templates/catalog_entry.html",
+    "delivery/templates/catalog_edit.html",
+    "delivery/templates/catalog_failure.html",
 }
 
 
@@ -256,7 +267,14 @@ def check_source(relative: str, source: str) -> list[str]:
     if module == "media" and "infrastructure" in parts and behavior:
         errors.append("dormant media adapter")
     for node in ast.walk(tree):
-        if isinstance(node, ast.ClassDef) and "repository" in node.name.lower():
+        if (
+            isinstance(node, ast.ClassDef)
+            and "repository" in node.name.lower()
+            and not (
+                relative == "catalog/infrastructure/repository.py"
+                and node.name == "CatalogRepository"
+            )
+        ):
             errors.append("private repository not approved")
         if (
             isinstance(node, ast.Attribute)
@@ -425,6 +443,8 @@ def check_data_inventory(package: Path) -> list[str]:
         "migrations/000_security.sql",
         "migrations/schema_manifest.json",
         "identity/infrastructure/migrations/005_identity.sql",
+        "catalog/infrastructure/migrations/006_catalog.sql",
+        "delivery/catalog-contract.json",
     }
     allowed.update(
         f"{module}/infrastructure/migrations/{version}_{module}.sql"

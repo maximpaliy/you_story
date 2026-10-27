@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>{{ 'Edit' if entry else 'Add' }} {{ kind }}</title></head>
+<body><header><a href="/catalog">Catalog</a></header><main><h1>{{ 'Edit' if entry else 'Add' }} {{ kind }}</h1>
+{% if parent %}<p>Under <a href="/catalog/entries/{{ parent.id }}">{{ parent.name }}</a></p>{% endif %}
+<form action="{{ '/catalog/entries/' ~ entry.id ~ '/edit' if entry else '/catalog/entries' }}" method="post">
+<input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="expected_catalog_version" value="{{ catalog.version }}">
+{% if entry %}<input type="hidden" name="expected_entry_version" value="{{ entry.version }}">{% else %}
+<input type="hidden" name="source_key" value="yousician"><input type="hidden" name="entry_type" value="{{ kind }}">
+{% if parent %}<input type="hidden" name="parent_entry_id" value="{{ parent.id }}"><input type="hidden" name="instrument_id" value="{{ parent.instrument_id }}">{% else %}
+<label for="instrument">Instrument</label> <select id="instrument" name="instrument_id" required>{% for instrument in refs.instruments %}<option value="{{ instrument.id }}"{% if selected == instrument.id|string %} selected{% endif %}>{{ instrument.name }}</option>{% endfor %}</select>{% endif %}{% endif %}
+<label>Name <input name="name" required maxlength="200" value="{{ entry.name if entry else '' }}"></label>
+{% if kind == 'song' %}<label>Author <input name="author" maxlength="200" value="{{ entry.metadata.author or '' if entry else '' }}"></label>
+{% elif kind == 'version' %}<label>Level <input name="level" type="number" min="0" max="15" step="1" required value="{{ entry.metadata.level if entry else '' }}"></label>
+{% else %}<label>Measured length in seconds (optional) <input name="length_seconds" type="number" min="1" max="2147483647" step="1" value="{{ entry.metadata.length_seconds if entry and entry.metadata.length_seconds is not none else '' }}"></label>
+<label>Musical note count <input name="notes_count" type="number" min="0" max="2147483647" step="1" required value="{{ entry.metadata.notes_count if entry else 0 }}"></label><p>Zero may mean the note count has not yet been observed.</p>{% endif %}
+<button type="submit">{{ 'Save changes' if entry else 'Create ' ~ kind }}</button>
+</form></main></body></html>

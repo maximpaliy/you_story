@@ -58,4 +58,4 @@ def test_openapi_approved_login_slice_only() -> None:
 
     assert set(schema["paths"]) == {path for path, _ in EXPECTED_ROUTES}
     for path, methods in EXPECTED_ROUTES:
-        assert set(schema["paths"][path]) == {next(iter(methods)).lower()}
+        assert set(schema["paths"][path]) == {method.lower() for method in methods}

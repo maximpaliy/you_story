@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Personal catalog</title></head>
+<body><header><a href="/">Home</a></header><main><h1>Personal catalog</h1>
+<form action="/catalog" method="get">
+<label>Song, version, fragment or author <input name="text" maxlength="200" value="{{ filters.get('text', '') }}"></label>
+<label>Author <input name="author" maxlength="200" value="{{ filters.get('author', '') }}"></label>
+<label for="instrument">Instrument</label> <select id="instrument" name="instrument_id"><option value="">All instruments</option>{% for instrument in refs.instruments %}<option value="{{ instrument.id }}"{% if filters.get('instrument_id') == instrument.id|string %} selected{% endif %}>{{ instrument.name }}</option>{% endfor %}</select>
+<label for="entry-type">Type</label> <select id="entry-type" name="entry_type"><option value="">All types</option>{% for kind in ['song', 'version', 'fragment'] %}<option value="{{ kind }}"{% if filters.get('entry_type') == kind %} selected{% endif %}>{{ kind }}</option>{% endfor %}</select>
+<button type="submit">Search</button></form>
+<p><a href="/catalog/entries/new">Add song</a></p>
+{% if items %}<ul>{% for entry in items %}<li><a href="/catalog/entries/{{ entry.id }}">{{ entry.name }}</a> ({{ entry.type }})</li>{% endfor %}</ul>{% else %}<p>No matching entries. Add a song or change your search.</p>{% endif %}
+{% if next_url %}<a href="{{ next_url }}">Next page</a>{% endif %}
+</main></body></html>

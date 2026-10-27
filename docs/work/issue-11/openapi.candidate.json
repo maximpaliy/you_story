@@ -1,0 +1,3604 @@
+{
+  "components": {
+    "schemas": {
+      "ErrorDetail": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "correlation_id": {
+            "format": "uuid",
+            "title": "Correlation Id",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "correlation_id"
+        ],
+        "title": "ErrorDetail",
+        "type": "object"
+      },
+      "ErrorEnvelope": {
+        "additionalProperties": false,
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorDetail"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "title": "ErrorEnvelope",
+        "type": "object"
+      },
+      "Health": {
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "enum": [
+              "live",
+              "ready"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "Health",
+        "type": "object"
+      },
+      "OwnProfile": {
+        "additionalProperties": false,
+        "properties": {
+          "provisioning_state": {
+            "enum": [
+              "catalog_pending",
+              "ready"
+            ],
+            "title": "Provisioning State",
+            "type": "string"
+          },
+          "user_id": {
+            "format": "uuid",
+            "title": "User Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "user_id",
+          "provisioning_state"
+        ],
+        "title": "OwnProfile",
+        "type": "object"
+      },
+      "CatalogCatalog": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9223372036854775807
+          }
+        },
+        "required": [
+          "id",
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "CatalogEntry": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "catalog_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "parent_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "source_key": {
+            "const": "yousician",
+            "type": "string"
+          },
+          "source_definition_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9223372036854775807
+          },
+          "instrument_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "song",
+              "version",
+              "fragment"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "metadata": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "author": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 200
+                  }
+                },
+                "required": [
+                  "author"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "level": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 15
+                  }
+                },
+                "required": [
+                  "level"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "length_seconds": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "notes_count": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 2147483647
+                  }
+                },
+                "required": [
+                  "length_seconds",
+                  "notes_count"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "active",
+              "tombstoned"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9223372036854775807
+          }
+        },
+        "required": [
+          "id",
+          "catalog_id",
+          "parent_id",
+          "source_key",
+          "source_definition_version",
+          "instrument_id",
+          "type",
+          "name",
+          "metadata",
+          "state",
+          "version"
+        ],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "song"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "metadata": {
+                  "type": "object",
+                  "properties": {
+                    "author": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "minLength": 1,
+                      "maxLength": 200
+                    }
+                  },
+                  "required": [
+                    "author"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "version"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "metadata": {
+                  "type": "object",
+                  "properties": {
+                    "level": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 15
+                    }
+                  },
+                  "required": [
+                    "level"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "fragment"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "metadata": {
+                  "type": "object",
+                  "properties": {
+                    "length_seconds": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "minimum": 1,
+                      "maximum": 2147483647
+                    },
+                    "notes_count": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 2147483647
+                    }
+                  },
+                  "required": [
+                    "length_seconds",
+                    "notes_count"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        ]
+      },
+      "CatalogMutation": {
+        "type": "object",
+        "properties": {
+          "catalog": {
+            "$ref": "#/components/schemas/CatalogCatalog"
+          },
+          "entry": {
+            "$ref": "#/components/schemas/CatalogEntry"
+          }
+        },
+        "required": [
+          "catalog",
+          "entry"
+        ],
+        "additionalProperties": false
+      },
+      "CatalogPage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/CatalogEntry"
+            }
+          },
+          "next_cursor": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 2048
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor"
+        ],
+        "additionalProperties": false
+      },
+      "CatalogAncestors": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 2,
+            "items": {
+              "$ref": "#/components/schemas/CatalogEntry"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false
+      },
+      "CatalogReferences": {
+        "type": "object",
+        "properties": {
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "const": "yousician",
+                  "type": "string"
+                },
+                "version": {
+                  "const": 1,
+                  "type": "integer"
+                },
+                "definition": {
+                  "type": "object",
+                  "properties": {
+                    "types": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "maxItems": 3,
+                      "minItems": 3
+                    },
+                    "parent_rules": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "parent_type": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "child_type": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "parent_type",
+                          "child_type"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "maxItems": 3,
+                      "minItems": 3
+                    },
+                    "metadata_rules": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "entry_type": {
+                            "type": "string"
+                          },
+                          "fields": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "key": {
+                                  "type": "string"
+                                },
+                                "kind": {
+                                  "type": "string",
+                                  "enum": [
+                                    "text",
+                                    "integer"
+                                  ]
+                                },
+                                "nullable": {
+                                  "type": "boolean"
+                                },
+                                "required_on_create": {
+                                  "type": "boolean"
+                                },
+                                "required_on_replace": {
+                                  "type": "boolean"
+                                },
+                                "min": {
+                                  "type": [
+                                    "integer",
+                                    "null"
+                                  ]
+                                },
+                                "max": {
+                                  "type": [
+                                    "integer",
+                                    "null"
+                                  ]
+                                },
+                                "default": {
+                                  "type": [
+                                    "string",
+                                    "integer",
+                                    "null"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "key",
+                                "kind",
+                                "nullable",
+                                "required_on_create",
+                                "required_on_replace",
+                                "min",
+                                "max",
+                                "default"
+                              ],
+                              "additionalProperties": false
+                            },
+                            "maxItems": 2
+                          }
+                        },
+                        "required": [
+                          "entry_type",
+                          "fields"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "maxItems": 3,
+                      "minItems": 3
+                    },
+                    "practiceable_types": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    }
+                  },
+                  "required": [
+                    "types",
+                    "parent_rules",
+                    "metadata_rules",
+                    "practiceable_types"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "key",
+                "version",
+                "definition"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 1,
+            "minItems": 1
+          },
+          "instruments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "key": {
+                  "type": "string",
+                  "enum": [
+                    "guitar",
+                    "piano"
+                  ]
+                },
+                "name": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "key",
+                "name"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 2,
+            "minItems": 2
+          }
+        },
+        "required": [
+          "sources",
+          "instruments"
+        ],
+        "additionalProperties": false
+      },
+      "CatalogCreate": {
+        "type": "object",
+        "properties": {
+          "source_key": {
+            "const": "yousician",
+            "type": "string"
+          },
+          "instrument_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Exact type-dependent create schema/defaults in http-contract.md; no arbitrary keys.",
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "author": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 200
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "level": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 15
+                  }
+                },
+                "required": [
+                  "level"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "length_seconds": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "notes_count": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 2147483647
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "entry_type": {
+            "type": "string",
+            "enum": [
+              "song",
+              "version",
+              "fragment"
+            ]
+          },
+          "parent_entry_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "source_key",
+          "instrument_id",
+          "name",
+          "metadata",
+          "entry_type"
+        ],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "entry_type": {
+                  "const": "song"
+                }
+              },
+              "required": [
+                "entry_type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "metadata": {
+                  "type": "object",
+                  "properties": {
+                    "author": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "minLength": 1,
+                      "maxLength": 200
+                    }
+                  },
+                  "required": [],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "entry_type": {
+                  "const": "version"
+                }
+              },
+              "required": [
+                "entry_type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "metadata": {
+                  "type": "object",
+                  "properties": {
+                    "level": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 15
+                    }
+                  },
+                  "required": [
+                    "level"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "entry_type": {
+                  "const": "fragment"
+                }
+              },
+              "required": [
+                "entry_type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "metadata": {
+                  "type": "object",
+                  "properties": {
+                    "length_seconds": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "minimum": 1,
+                      "maximum": 2147483647
+                    },
+                    "notes_count": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 2147483647
+                    }
+                  },
+                  "required": [],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        ]
+      },
+      "CatalogUpdate": {
+        "type": "object",
+        "properties": {
+          "expected_entry_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9223372036854775807
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "metadata": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "author": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 200
+                  }
+                },
+                "required": [
+                  "author"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "level": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 15
+                  }
+                },
+                "required": [
+                  "level"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "length_seconds": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "notes_count": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 2147483647
+                  }
+                },
+                "required": [
+                  "length_seconds",
+                  "notes_count"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "required": [
+          "expected_entry_version"
+        ],
+        "additionalProperties": false,
+        "anyOf": [
+          {
+            "required": [
+              "name"
+            ]
+          },
+          {
+            "required": [
+              "metadata"
+            ]
+          }
+        ]
+      },
+      "CatalogMove": {
+        "type": "object",
+        "properties": {
+          "expected_entry_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9223372036854775807
+          },
+          "new_parent_entry_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "expected_entry_version",
+          "new_parent_entry_id"
+        ],
+        "additionalProperties": false
+      },
+      "CatalogTombstone": {
+        "type": "object",
+        "properties": {
+          "expected_entry_version": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9223372036854775807
+          }
+        },
+        "required": [
+          "expected_entry_version"
+        ],
+        "additionalProperties": false
+      },
+      "CatalogError": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "correlation_id": {
+                "type": "string",
+                "format": "uuid"
+              }
+            },
+            "required": [
+              "code",
+              "message",
+              "correlation_id"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "SessionCookie": {
+        "description": "Opaque browser session; request fields cannot select identity or tenant.",
+        "in": "cookie",
+        "name": "__Host-you_story_session",
+        "type": "apiKey"
+      },
+      "CatalogSession": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "__Host-you_story_session"
+      }
+    }
+  },
+  "info": {
+    "title": "You Story",
+    "version": "0.1.0",
+    "description": " Proposed Issue #11 additive JSON contract; HTML inventory and security semantics in accompanying http-contract.md."
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "ownHome",
+        "responses": {
+          "200": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "303": {
+            "description": "Fixed /login for anonymous user"
+          },
+          "400": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Safe bounded failure"
+          },
+          "404": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not found"
+          },
+          "405": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Method not allowed"
+          },
+          "422": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Invalid request"
+          },
+          "500": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Safe bounded failure"
+          },
+          "503": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Safe bounded failure"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Page"
+      }
+    },
+    "/api/v1/profile": {
+      "get": {
+        "operationId": "getOwnProfile",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OwnProfile"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Safe bounded failure"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Safe bounded failure"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not found"
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Method not allowed"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Invalid request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Safe bounded failure"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Safe bounded failure"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Profile Json"
+      }
+    },
+    "/auth/google/callback": {
+      "get": {
+        "description": "Exactly one state and one of code or error. Unknown/duplicate query fields and body rejected. HEAD never dispatches; every GET failure is generic HTML.",
+        "operationId": "completeGoogleLogin",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "state",
+            "required": true,
+            "schema": {
+              "maxLength": 43,
+              "minLength": 43,
+              "pattern": "^[A-Za-z0-9_-]{43}$",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "code",
+            "required": false,
+            "schema": {
+              "maxLength": 8192,
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "error",
+            "required": false,
+            "schema": {
+              "maxLength": 8192,
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "scope",
+            "required": false,
+            "schema": {
+              "maxLength": 8192,
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "authuser",
+            "required": false,
+            "schema": {
+              "maxLength": 8192,
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "prompt",
+            "required": false,
+            "schema": {
+              "maxLength": 8192,
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "iss",
+            "required": false,
+            "schema": {
+              "maxLength": 8192,
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "error_description",
+            "required": false,
+            "schema": {
+              "maxLength": 8192,
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "error_uri",
+            "required": false,
+            "schema": {
+              "maxLength": 8192,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "303": {
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Generic sign-in failure with fixed /login retry link"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not found"
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Method not allowed"
+          },
+          "409": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Generic sign-in failure with fixed /login retry link"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Invalid request"
+          },
+          "429": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Generic sign-in failure with fixed /login retry link",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "minimum": 1,
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Generic sign-in failure with fixed /login retry link"
+          },
+          "503": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Generic sign-in failure with fixed /login retry link"
+          }
+        },
+        "summary": "Callback",
+        "x-max-query-bytes": 8192,
+        "x-reject-duplicate-fields": true
+      }
+    },
+    "/auth/google/start": {
+      "post": {
+        "operationId": "startGoogleLogin",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "destination": {
+                    "default": "home",
+                    "enum": [
+                      "home",
+                      "calendar",
+                      "catalog"
+                    ],
+                    "type": "string"
+                  },
+                  "invitation": {
+                    "maxLength": 43,
+                    "minLength": 43,
+                    "pattern": "^[A-Za-z0-9_-]{43}$",
+                    "type": "string"
+                  },
+                  "proof": {
+                    "maxLength": 512,
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "proof"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "303": {
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Safe bounded failure"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Safe bounded failure"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not found"
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Method not allowed"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Safe bounded failure"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Safe bounded failure"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Safe bounded failure"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Invalid request"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Safe bounded failure",
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "minimum": 1.0,
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Safe bounded failure"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Safe bounded failure"
+          }
+        },
+        "summary": "Start",
+        "x-max-body-bytes": 4096,
+        "x-origin-and-csrf-required": true,
+        "x-reject-duplicate-fields": true
+      }
+    },
+    "/live": {
+      "get": {
+        "operationId": "live",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not found"
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Method not allowed"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Invalid request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unexpected error"
+          }
+        },
+        "summary": "Live"
+      }
+    },
+    "/login": {
+      "get": {
+        "operationId": "loginForm",
+        "responses": {
+          "200": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "303": {
+            "description": "Fixed / for authenticated user"
+          },
+          "400": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Safe bounded failure"
+          },
+          "404": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not found"
+          },
+          "405": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Method not allowed"
+          },
+          "422": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Invalid request"
+          },
+          "500": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Safe bounded failure"
+          },
+          "503": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Safe bounded failure"
+          }
+        },
+        "summary": "Login"
+      }
+    },
+    "/logout": {
+      "post": {
+        "operationId": "logoutCurrentSession",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "csrf": {
+                    "maxLength": 43,
+                    "minLength": 43,
+                    "pattern": "^[A-Za-z0-9_-]{43}$",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "csrf"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "303": {
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Safe bounded failure"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Safe bounded failure"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Safe bounded failure"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not found"
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Method not allowed"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Safe bounded failure"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Safe bounded failure"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Invalid request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Safe bounded failure"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Safe bounded failure"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Logout",
+        "x-max-body-bytes": 4096,
+        "x-origin-and-csrf-required": true,
+        "x-reject-duplicate-fields": true
+      }
+    },
+    "/profile": {
+      "get": {
+        "operationId": "ownProfilePage",
+        "responses": {
+          "200": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "303": {
+            "description": "Fixed /login for anonymous user"
+          },
+          "400": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Safe bounded failure"
+          },
+          "404": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not found"
+          },
+          "405": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Method not allowed"
+          },
+          "422": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Invalid request"
+          },
+          "500": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Safe bounded failure"
+          },
+          "503": {
+            "content": {
+              "text/html": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Safe bounded failure"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ],
+        "summary": "Page"
+      }
+    },
+    "/ready": {
+      "get": {
+        "operationId": "ready",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not found"
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Method not allowed"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Invalid request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unexpected error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unavailable"
+          }
+        },
+        "summary": "Ready"
+      }
+    },
+    "/api/v1/catalog": {
+      "get": {
+        "operationId": "catalog_get_catalog_9",
+        "tags": [
+          "personal catalog"
+        ],
+        "description": "Proposed, not implemented. Normative semantics in docs/work/issue-11/http-contract.md. Unknown fields/query parameters forbidden.",
+        "parameters": [],
+        "security": [
+          {
+            "CatalogSession": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; no-store and existing security headers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogCatalog"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Strong entry ETag for detail; catalog aggregate ETag otherwise"
+              }
+            }
+          },
+          "401": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/catalog/references": {
+      "get": {
+        "operationId": "catalog_get_references_10",
+        "tags": [
+          "personal catalog"
+        ],
+        "description": "Proposed, not implemented. Normative semantics in docs/work/issue-11/http-contract.md. Unknown fields/query parameters forbidden.",
+        "parameters": [],
+        "security": [
+          {
+            "CatalogSession": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; no-store and existing security headers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogReferences"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/catalog/entries": {
+      "get": {
+        "operationId": "catalog_get_page_11",
+        "tags": [
+          "personal catalog"
+        ],
+        "description": "Proposed, not implemented. Normative semantics in docs/work/issue-11/http-contract.md. Unknown fields/query parameters forbidden.",
+        "parameters": [
+          {
+            "name": "page_size",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 2048
+            }
+          },
+          {
+            "name": "text",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "description": "Literal case-insensitive entry name OR containing-song author substring."
+          },
+          {
+            "name": "source_key",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "yousician"
+              ]
+            }
+          },
+          {
+            "name": "instrument_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "entry_type",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "song",
+                "version",
+                "fragment"
+              ]
+            }
+          },
+          {
+            "name": "ancestor_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "author",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "description": "Literal case-insensitive containing-song author substring; AND with other filters. Empty after NFC/trim means absent."
+          }
+        ],
+        "security": [
+          {
+            "CatalogSession": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; no-store and existing security headers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogPage"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "catalog_post_create_15",
+        "tags": [
+          "personal catalog"
+        ],
+        "description": "Proposed, not implemented. Normative semantics in docs/work/issue-11/http-contract.md. Unknown fields/query parameters forbidden.",
+        "parameters": [
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\"catalog:[0-9a-f-]{36}:[1-9][0-9]*\"$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CatalogSession": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success; no-store and existing security headers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogMutation"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Strong entry ETag for detail; catalog aggregate ETag otherwise"
+              },
+              "Location": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CatalogCreate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/catalog/entries/{entry_id}": {
+      "get": {
+        "operationId": "catalog_get_entry_12",
+        "tags": [
+          "personal catalog"
+        ],
+        "description": "Proposed, not implemented. Normative semantics in docs/work/issue-11/http-contract.md. Unknown fields/query parameters forbidden.",
+        "parameters": [
+          {
+            "name": "entry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CatalogSession": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; no-store and existing security headers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogEntry"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Strong entry ETag for detail; catalog aggregate ETag otherwise"
+              }
+            }
+          },
+          "401": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "catalog_patch_update_15",
+        "tags": [
+          "personal catalog"
+        ],
+        "description": "Proposed, not implemented. Normative semantics in docs/work/issue-11/http-contract.md. Unknown fields/query parameters forbidden.",
+        "parameters": [
+          {
+            "name": "entry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\"catalog:[0-9a-f-]{36}:[1-9][0-9]*\"$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CatalogSession": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; no-store and existing security headers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogMutation"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Strong entry ETag for detail; catalog aggregate ETag otherwise"
+              }
+            }
+          },
+          "401": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CatalogUpdate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/catalog/entries/{entry_id}/children": {
+      "get": {
+        "operationId": "catalog_get_page_13",
+        "tags": [
+          "personal catalog"
+        ],
+        "description": "Proposed, not implemented. Normative semantics in docs/work/issue-11/http-contract.md. Unknown fields/query parameters forbidden.",
+        "parameters": [
+          {
+            "name": "entry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 2048
+            }
+          }
+        ],
+        "security": [
+          {
+            "CatalogSession": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; no-store and existing security headers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogPage"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/catalog/entries/{entry_id}/ancestors": {
+      "get": {
+        "operationId": "catalog_get_ancestors_14",
+        "tags": [
+          "personal catalog"
+        ],
+        "description": "Proposed, not implemented. Normative semantics in docs/work/issue-11/http-contract.md. Unknown fields/query parameters forbidden.",
+        "parameters": [
+          {
+            "name": "entry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CatalogSession": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; no-store and existing security headers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogAncestors"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/catalog/entries/{entry_id}/move": {
+      "post": {
+        "operationId": "catalog_post_move_15",
+        "tags": [
+          "personal catalog"
+        ],
+        "description": "Proposed, not implemented. Normative semantics in docs/work/issue-11/http-contract.md. Unknown fields/query parameters forbidden.",
+        "parameters": [
+          {
+            "name": "entry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\"catalog:[0-9a-f-]{36}:[1-9][0-9]*\"$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CatalogSession": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; no-store and existing security headers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogMutation"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Strong entry ETag for detail; catalog aggregate ETag otherwise"
+              }
+            }
+          },
+          "401": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CatalogMove"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/catalog/entries/{entry_id}/tombstone": {
+      "post": {
+        "operationId": "catalog_post_tombstone_16",
+        "tags": [
+          "personal catalog"
+        ],
+        "description": "Proposed, not implemented. Normative semantics in docs/work/issue-11/http-contract.md. Unknown fields/query parameters forbidden.",
+        "parameters": [
+          {
+            "name": "entry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\"catalog:[0-9a-f-]{36}:[1-9][0-9]*\"$"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CatalogSession": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; no-store and existing security headers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogMutation"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Strong entry ETag for detail; catalog aggregate ETag otherwise"
+              }
+            }
+          },
+          "401": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Fixed safe error; see HTTP contract for applicability and precedence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogError"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CatalogTombstone"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

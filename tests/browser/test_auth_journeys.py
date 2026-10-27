@@ -128,7 +128,14 @@ def web_application(tmp_path_factory):
     database = Database(settings)
     provider = GoogleOIDC(auth, transport=httpx.MockTransport(transport))
     service = create_identity_service(database, auth, provider=provider)
-    app = create_app(settings, auth_settings=auth, auth_service=service)
+    from you_story.catalog.public import CatalogSettings
+
+    app = create_app(
+        settings,
+        auth_settings=auth,
+        auth_service=service,
+        catalog_settings=CatalogSettings(cursor_key="Q" * 42 + "A"),
+    )
     directory = tmp_path_factory.mktemp("auth-tls")
     name = x509.Name([x509.NameAttribute(NameOID.COMMON_NAME, "localhost")])
     now = datetime.now(UTC)

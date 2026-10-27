@@ -16,6 +16,7 @@ REVISION_PATHS = {
     "003_practice": "practice/infrastructure/migrations/003_practice.sql",
     "004_media": "media/infrastructure/migrations/004_media.sql",
     "005_identity": "identity/infrastructure/migrations/005_identity.sql",
+    "006_catalog": "catalog/infrastructure/migrations/006_catalog.sql",
 }
 
 
@@ -30,6 +31,7 @@ REVIEWED_CHECKSUMS = {
     "003_practice": "4be1452ba450c3bce52105fcc5c1a280b36b29921ab1a551502127229cf15115",
     "004_media": "a941bacb7712493f6e6ea1896c4c1e28591c79e53b6c0753e389f74e2576e0ce",
     "005_identity": "4cad83d3b26ad8dab1abbb2666c21ed1a6db7c088cec844745009d55c91e04bc",
+    "006_catalog": "89a595b28751fb0da53a64b5000ec5eb4b4812c2272559adcbff04d3dc6b5d39",
 }
 
 

@@ -12,7 +12,7 @@ from you_story.migrations.manifest import (
 )
 
 
-def migrate(dsn: str, target: str = "005_identity") -> None:
+def migrate(dsn: str, target: str = "006_catalog") -> None:
     """Apply exact reviewed schema revisions without domain callbacks."""
     if target not in REVISION_PATHS:
         raise ValueError("unsupported migration target")
